@@ -2,7 +2,7 @@ version: '3'
 services:
   app:
     image: 812844034365.dkr.ecr.eu-west-3.amazonaws.com/logora-nlp-staging
-    env_file: .env
+    env_file: .env.staging
     ports:
       - "8000:8000"
 

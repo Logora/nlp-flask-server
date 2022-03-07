@@ -50,7 +50,7 @@ def status():
             status:
               type: string
               description: Status message.
-              example: 'everyhing is allright'
+              example: 'everything is allright'
   """
   return jsonify({"name": "Logora NLP", "status": "everything is allright"})
 
