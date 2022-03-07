@@ -10,6 +10,8 @@ from opentelemetry.instrumentation.flask import FlaskInstrumentor
 import tracer_config
 from logger import JSONRequestLogFormatter, RequestResponseDTO
 import os
+import sys
+from time import strftime
 from dotenv import load_dotenv
 from config import Config
 import psycopg2
