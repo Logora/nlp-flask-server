@@ -39,16 +39,11 @@ jobs:
 
     - name: Login to Amazon ECR
       uses: aws-actions/amazon-ecr-login@v1
-    
-    - name: Define Docker default driver
-      run: |
-        sudo bash -c 'echo "{\"log-driver\": \"loki\", \"log-opts\": {\"loki-url\": \"http://monitoring.logora.fr:3100/loki/api/v1/push\"}}" >> /etc/docker/daemon.json'
-        sudo systemctl restart docker
 
     - name: Build and push image to ECR
       env:
         ECR_REGISTRY: 812844034365.dkr.ecr.eu-west-3.amazonaws.com
-        ECR_REPOSITORY: logora-moderation-staging
+        ECR_REPOSITORY: logora-nlp-staging
         IMAGE_TAG: ${{ github.sha }}
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
@@ -62,7 +57,7 @@ jobs:
       run: cp .env.staging .env
 
     - name: Create task definition version
-      run: ecs-cli compose -r eu-west-3 -p moderation-staging create
+      run: ecs-cli compose -r eu-west-3 -p nlp-staging create
 
     - name: Setup Terraform  
       uses: hashicorp/setup-terraform@v1

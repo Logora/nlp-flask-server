@@ -43,7 +43,7 @@ jobs:
     - name: Build and push image to ECR
       env:
         ECR_REGISTRY: 812844034365.dkr.ecr.eu-west-3.amazonaws.com
-        ECR_REPOSITORY: logora-moderation-production
+        ECR_REPOSITORY: logora-nlp-production
         IMAGE_TAG: ${{ github.sha }}
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
@@ -57,7 +57,7 @@ jobs:
       run: cp .env.prod .env
 
     - name: Create task definition version
-      run: ecs-cli compose -r eu-west-3 -p moderation-production create
+      run: ecs-cli compose -r eu-west-3 -p nlp-production create
 
     - name: Setup Terraform  
       uses: hashicorp/setup-terraform@v1
