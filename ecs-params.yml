@@ -1,0 +1,9 @@
+version: 1
+task_definition:
+  services:
+    app:
+      mem_limit: "1600m"
+      essential: true
+    cadvisor:
+      mem_limit: "100m"
+      essential: false

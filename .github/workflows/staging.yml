@@ -1,0 +1,81 @@
+name: Deploy staging
+on:
+  push:
+    branches:
+    - staging
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    
+    - name: Checkout source code
+      uses: actions/checkout@v2
+
+    - name: Create LFS file list
+      run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
+
+    - name: Restore LFS cache
+      uses: actions/cache@v2
+      id: lfs-cache
+      with:
+        path: .git/lfs
+        key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}-v1
+
+    - name: Git LFS Pull
+      run: git lfs pull
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-west-3
+    
+    - name: Setup ECS CLI
+      uses: marocchino/setup-ecs-cli@v1
+      with:
+        version: "v1.18.0"
+
+    - name: Login to Amazon ECR
+      uses: aws-actions/amazon-ecr-login@v1
+    
+    - name: Define Docker default driver
+      run: |
+        sudo bash -c 'echo "{\"log-driver\": \"loki\", \"log-opts\": {\"loki-url\": \"http://monitoring.logora.fr:3100/loki/api/v1/push\"}}" >> /etc/docker/daemon.json'
+        sudo systemctl restart docker
+
+    - name: Build and push image to ECR
+      env:
+        ECR_REGISTRY: 812844034365.dkr.ecr.eu-west-3.amazonaws.com
+        ECR_REPOSITORY: logora-moderation-staging
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+    - name: Rename docker-compose file
+      run: cp docker-compose.staging.yml docker-compose.yml
+
+    - name: Rename env file
+      run: cp .env.staging .env
+
+    - name: Create task definition version
+      run: ecs-cli compose -r eu-west-3 -p moderation-staging create
+
+    - name: Setup Terraform  
+      uses: hashicorp/setup-terraform@v1
+
+    - name: Terraform init, switch workspace and validate
+      env:
+        WORKSPACE: staging
+      run: |
+        terraform init
+        terraform workspace select $WORKSPACE || terraform workspace new $WORKSPACE
+        terraform validate -no-color
+      working-directory: ./terraform
+
+    - name: Terraform Apply
+      run: terraform apply -auto-approve
+      working-directory: ./terraform

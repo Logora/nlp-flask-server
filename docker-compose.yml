@@ -1,0 +1,21 @@
+version: '3.7'
+services:
+  app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: logora-moderation
+    env_file: .env
+    ports:
+      - "8000:8000"
+
+  cadvisor:
+    image: google/cadvisor:latest
+    volumes:
+        - /:/rootfs:ro
+        - /var/run:/var/run:rw
+        - /sys:/sys:ro
+        - /var/lib/docker/:/var/lib/docker:ro
+    command: ["--storage_duration=30s"]
+    ports:
+      - "8081:8081"

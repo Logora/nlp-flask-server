@@ -1,0 +1,27 @@
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+
+.git
+.github
+notebooks/*
+scripts/*
+__pycache__/*
+data/messages_*
+
+model/tf_model_v1.h5
+model/config_v1.json
+
+.env
+.env.staging
+.env.prod
+
+docker-compose.yml
+Dockerfile
+
+terraform/.terraform/
+*.tfstate
+*.tfstate.backup
+*.lock.hcl
+*.lock.info
+*.ipynb
