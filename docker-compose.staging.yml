@@ -5,6 +5,20 @@ services:
     env_file: .env
     ports:
       - "8000:8000"
+    links:
+      - fluent-bit:fluent-bit
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: "localhost:24224"
+
+  fluent-bit:
+    image: 812844034365.dkr.ecr.eu-west-3.amazonaws.com/fluentbit
+    environment:
+      - SERVICE_NAME=logora-nlp-staging
+      - LOKI_HOST=monitoring.logora.fr
+    ports:
+      - "24224:24224"
 
   cadvisor:
     image: google/cadvisor:latest
