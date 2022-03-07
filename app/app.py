@@ -153,4 +153,4 @@ def create_analysis():
     return make_response(jsonify({"success": False, "error": "Analysis identifier not provided"}), 422)
 
 if __name__ == '__main__':
-  app.run(debug=True, port=8000)
+  app.run(debug=False, port=8000)
