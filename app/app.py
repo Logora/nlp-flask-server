@@ -3,6 +3,12 @@ from flask_migrate import Migrate
 from flask_caching import Cache
 from flask_cors import CORS
 from flasgger import Swagger
+import logging
+import json_logging
+from json_logging import init_flask, init_request_instrument
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+import tracer_config
+from logger import JSONRequestLogFormatter, RequestResponseDTO
 import os
 from dotenv import load_dotenv
 from config import Config
@@ -13,6 +19,11 @@ from analysis import dummy
 
 load_dotenv()
 
+# Init logger
+logger = logging.getLogger("test-logger")
+logger.setLevel(logging.DEBUG)
+logger.addHandler(logging.StreamHandler(sys.stdout))
+
 app = Flask(__name__)
 cache = Cache()
 app.config.from_object(Config)
@@ -20,7 +31,12 @@ db.init_app(app)
 
 migrate = Migrate(app, db)
 
+init_flask(enable_json=True)
+init_request_instrument(app, JSONRequestLogFormatter, [], RequestResponseDTO)
+
 CORS(app)
+
+FlaskInstrumentor().instrument_app(app)
 
 app.config['SWAGGER'] = {
     'title': 'Logora NLP',
