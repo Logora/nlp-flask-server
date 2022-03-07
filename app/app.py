@@ -43,12 +43,16 @@ def status():
         schema:
           type: object
           properties:
+            name:
+              type: string
+              description: App name.
+              example: 'Logora NLP'
             status:
               type: string
               description: Status message.
               example: 'everyhing is allright'
   """
-  return jsonify({"status": "everything is allright"})
+  return jsonify({"name": "Logora NLP", "status": "everything is allright"})
 
 # Get analysis
 @app.route('/analysis/<uid>', methods=['GET'])
