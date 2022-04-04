@@ -4,9 +4,6 @@ task_definition:
     app:
       mem_limit: "1600m"
       essential: true
-    fluent-bit:
-      mem_limit: "75m"
-      essential: false
     cadvisor:
       mem_limit: "100m"
       essential: false
