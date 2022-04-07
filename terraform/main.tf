@@ -26,6 +26,7 @@ module "ecs-cluster" {
   alb_listener_arn = "arn:aws:elasticloadbalancing:eu-west-3:812844034365:listener/app/logora-main/b07504f433dc2038/76e41df49624512a"
   subnet_ids = ["subnet-8ff4dce6"]
   ingress_security_groups = ["monitoring-production"]
+  ingress_target_security_groups = terraform.workspace == "production" ? ["rds-nlp-production"] : []
   application_name = "${var.project_name}-${terraform.workspace}"
   environment_name = terraform.workspace
   application_host = terraform.workspace == "production" ? "nlp.logora.fr" : "${var.project_name}-${terraform.workspace}.logora.fr"
