@@ -7,6 +7,11 @@ import json
 from json_logging import DefaultRequestResponseDTO
 from opentelemetry import trace
 
+# Init logger
+logger = logging.getLogger("test-logger")
+logger.setLevel(logging.DEBUG)
+logger.addHandler(logging.StreamHandler(sys.stdout))
+
 JSON_SERIALIZER = lambda log: json.dumps(log, ensure_ascii=False)
 
 class JSONRequestLogFormatter(logging.Formatter):

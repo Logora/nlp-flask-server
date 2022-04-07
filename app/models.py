@@ -1,6 +1,6 @@
 from datetime import datetime
 from sqlalchemy.dialects.postgresql import JSON
-from db import db
+from app import db
 
 class Analysis(db.Model):
     __tablename__ = 'analysis'

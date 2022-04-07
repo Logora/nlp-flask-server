@@ -8,34 +8,31 @@ import json_logging
 from json_logging import init_flask, init_request_instrument
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
 import tracer_config
-from logger import JSONRequestLogFormatter, RequestResponseDTO
+from logger import logger, JSONRequestLogFormatter, RequestResponseDTO
 import os
 import sys
 from time import strftime
 from dotenv import load_dotenv
 from config import Config
 import psycopg2
-from models import Analysis
-from db import db
+from flask_sqlalchemy import SQLAlchemy
+from flask import request, make_response, jsonify
 from analysis import dummy
+import threading
+from keyphrase_extraction import extract_keyphrases
+from sqlalchemy.exc import SQLAlchemyError
 
 load_dotenv()
 
-# Init logger
-logger = logging.getLogger("test-logger")
-logger.setLevel(logging.DEBUG)
-logger.addHandler(logging.StreamHandler(sys.stdout))
-
 app = Flask(__name__)
-cache = Cache()
 app.config.from_object(Config)
-db.init_app(app)
 
-migrate = Migrate(app, db)
+db = SQLAlchemy(app)
+Migrate(app, db)
 
-init_flask(enable_json=True)
-init_request_instrument(app, JSONRequestLogFormatter, [], RequestResponseDTO)
+import models
 
+cache = Cache()
 CORS(app)
 
 FlaskInstrumentor().instrument_app(app)
@@ -48,6 +45,7 @@ app.config['SWAGGER'] = {
     'specs_route': '/docs/'
 }
 swagger = Swagger(app)
+
 
 @app.route('/')
 def status():
@@ -110,7 +108,7 @@ def get_analysis(uid):
                   description: Analysis content in JSON format
                   example: '{}'
   """
-  analysis = Analysis.query.filter_by(uid=uid).first()
+  analysis = models.Analysis.query.filter_by(uid=uid).first()
   if analysis is None:
     return make_response(jsonify({"success": False, "error": "Object not found"}), 404)
   else:
@@ -161,14 +159,37 @@ def create_analysis():
     status = "done"
     if name == "test":
       content = dummy(request.json)
-      analysis = Analysis(uid, name, content, status)
-      db.session.add(analysis)
-      db.session.commit()
-      return jsonify({"success": True, "data": { "uid": analysis.uid, "name": analysis.name }})
+      analysis = models.Analysis(uid, name, content, status)
+      try:
+        db.session.add(analysis)
+        db.session.commit()
+      except SQLAlchemyError as e:
+        return make_response(jsonify({"success": False, "error": "Error when inserting database"}), 422)
+      return jsonify({"success": True, "data": { "uid": uid, "name": name }})
+    elif name == "keyphrase_extraction":
+      body = request.json
+      if "documents" in body:
+        documents = body["documents"]
+        analysis_thread = threading.Thread(target=keyphrase_extraction_analysis, name="Analysis", args=(uid, documents))
+        analysis_thread.start()
+      else:
+        return make_response(jsonify({"success": False, "error": "Request malformed"}), 400)
+      return jsonify({"success": True, "data": { "uid": uid, "name": name }})
     else:
       return make_response(jsonify({"success": False, "error": "Analysis name unknown"}), 404)
   else:
     return make_response(jsonify({"success": False, "error": "Analysis identifier not provided"}), 422)
 
+def keyphrase_extraction_analysis(uid, documents):
+  json_analysis = extract_keyphrases(uid, documents)
+
+  analysis = models.Analysis(uid, "keyphrase_extraction", json_analysis, "done")
+  db.session.add(analysis)
+  db.session.commit()
+  return True
+
 if __name__ == '__main__':
+  init_flask(enable_json=True)
+  init_request_instrument(app, JSONRequestLogFormatter, [], RequestResponseDTO)
+
   app.run(debug=False, port=8000)

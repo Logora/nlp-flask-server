@@ -13,3 +13,8 @@ opentelemetry-sdk==1.6.2
 opentelemetry-exporter-otlp==1.6.2
 opentelemetry-instrumentation-flask==0.25b2
 json-logging==1.4.1rc0
+pandas==1.4.2
+torch==1.11.0
+transformers==4.17.0
+-e git+https://github.com/Logora/KeyphraseVectorizers.git@use_lemmatizer#egg=keyphrase-vectorizers
+https://github.com/explosion/spacy-models/releases/download/fr_dep_news_trf-3.2.0/fr_dep_news_trf-3.2.0.tar.gz#egg=fr_dep_news_trf
