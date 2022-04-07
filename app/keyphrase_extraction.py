@@ -1,6 +1,9 @@
 import pandas as pd
 import spacy
 from keyphrase_vectorizers import KeyphraseTfidfVectorizer
+import nltk
+
+nltk.download('stopwords')
 
 def extract_keyphrases(uid, documents):
   vectorizer = KeyphraseTfidfVectorizer(spacy_pipeline='fr_dep_news_trf',
