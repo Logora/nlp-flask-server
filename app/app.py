@@ -155,34 +155,46 @@ def create_analysis():
   """
   uid = request.args.get('uid')
   name = request.args.get('name')
-  if uid and name:
-    status = "done"
-    if name == "test":
-      content = dummy(request.json)
-      analysis = models.Analysis(uid, name, content, status)
-      try:
-        db.session.add(analysis)
-        db.session.commit()
-      except SQLAlchemyError as e:
-        return make_response(jsonify({"success": False, "error": "Error when inserting database"}), 422)
-      return jsonify({"success": True, "data": { "uid": uid, "name": name }})
-    elif name == "keyphrase_extraction":
-      body = request.json
-      if "documents" in body:
-        documents = body["documents"]
-        analysis_thread = threading.Thread(target=keyphrase_extraction_analysis, name="Analysis", args=(uid, documents))
-        analysis_thread.start()
-      else:
-        return make_response(jsonify({"success": False, "error": "Request malformed"}), 400)
-      return jsonify({"success": True, "data": { "uid": uid, "name": name }})
-    else:
-      return make_response(jsonify({"success": False, "error": "Analysis name unknown"}), 404)
-  else:
+  language = request.args.get('language')
+
+  if not (uid and name):
     return make_response(jsonify({"success": False, "error": "Analysis identifier not provided"}), 422)
+
+  target_function = None
+  args = ()
+
+  if name == "test":
+    content = dummy(request.json)
+  elif name == "keyphrase_extraction":
+    body = request.json
+    if "documents" in body:
+      documents = body["documents"]
+      target_function = keyphrase_extraction_analysis
+      args = (uid, documents)
+    else:
+      return make_response(jsonify({"success": False, "error": "Request malformed"}), 400)
+  elif name == "debate_summary":
+    body = request.json
+    question = request.args.get('question')
+    if "documents" in body:
+      documents = body["documents"]
+      target_function = keyphrase_extraction_analysis
+      args = (uid, documents, question)
+    else:
+      return make_response(jsonify({"success": False, "error": "Request malformed"}), 400)
+  else:
+    return make_response(jsonify({"success": False, "error": "Analysis name unknown"}), 404)
+
+  # Start analysis thread
+  analysis_thread = threading.Thread(target=target_function, name="Analysis", args=args)
+  analysis_thread.start()
+
+  return jsonify({"success": True, "data": { "uid": uid, "name": name }})
 
 def keyphrase_extraction_analysis(uid, documents):
   json_analysis = extract_keyphrases(uid, documents)
 
+  # Store analysis result
   analysis = models.Analysis(uid, "keyphrase_extraction", json_analysis, "done")
   db.session.add(analysis)
   db.session.commit()
