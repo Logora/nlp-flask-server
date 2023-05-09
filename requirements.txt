@@ -14,7 +14,6 @@ opentelemetry-exporter-otlp==1.17.0
 opentelemetry-instrumentation-flask==0.38b0 
 json-logging==1.5.0rc0
 pandas==2.0.1
-nltk==3.8.1
 torch==2.0.1
 transformers==4.28.1
 keyphrase-vectorizers==0.0.11
