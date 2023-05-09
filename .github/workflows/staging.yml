@@ -12,19 +12,6 @@ jobs:
     - name: Checkout source code
       uses: actions/checkout@v2
 
-    - name: Create LFS file list
-      run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
-
-    - name: Restore LFS cache
-      uses: actions/cache@v2
-      id: lfs-cache
-      with:
-        path: .git/lfs
-        key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}-v1
-
-    - name: Git LFS Pull
-      run: git lfs pull
-
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -50,11 +37,18 @@ jobs:
         docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
-    - name: Rename docker-compose file
-      run: cp docker-compose.staging.yml docker-compose.yml
+    - name: Create .env file
+      uses: shine1594/secrets-to-env-action@master
+      with:
+        secrets: ${{ toJSON(secrets) }}
+        secrets_env: production
+        prefix_prod: _STAGING_
 
-    - name: Rename env file
-      run: cp .env.staging .env
+    - name: Add image version to environment variables
+      run: echo -e "\nIMAGE_VERSION=${{ github.sha }}" >> .env
+
+    - name: Rename docker-compose web file
+      run: cp docker-compose.staging.yml docker-compose.yml
 
     - name: Create task definition version
       run: ecs-cli compose -r eu-west-3 -p nlp-staging create
