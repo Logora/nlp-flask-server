@@ -1,18 +1,16 @@
 import pandas as pd
 import spacy
 from keyphrase_vectorizers import KeyphraseTfidfVectorizer
-import nltk
-
-nltk.download('stopwords')
+from spacy.lang.fr.stop_words import STOP_WORDS as fr_stop
 
 def extract_keyphrases(uid, documents):
   vectorizer = KeyphraseTfidfVectorizer(spacy_pipeline='fr_dep_news_trf',
                                         pos_pattern="<NOUN>(<ADP><DET><NOUN>|<ADP><NOUN>|<NOUN><ADJ>|<ADJ>|<NOUN>)",
-                                        use_lemmatizer=True)
+                                        stop_words=fr_stop)
 
   vectorizer_propositions = KeyphraseTfidfVectorizer(spacy_pipeline='fr_dep_news_trf',
                                         pos_pattern="<VERB>(<DET><NOUN><ADP><NOUN>|<DET><NOUN><ADJ>|<DET><NOUN><NOUN>)",
-                                        use_lemmatizer=True)
+                                        stop_words=fr_stop)
 
   m = vectorizer.fit_transform(documents)
   m_prop = vectorizer_propositions.fit_transform(documents)

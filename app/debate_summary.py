@@ -1,27 +1,35 @@
 import pandas as pd
 import spacy
 from keyphrase_vectorizers import KeyphraseTfidfVectorizer
-import nltk
+from spacy.lang.fr.stop_words import STOP_WORDS as fr_stop
 
-nltk.download('stopwords')
-
-def extract_keyphrases(uid, documents, question):
-  vectorizer = KeyphraseTfidfVectorizer(spacy_pipeline='fr_dep_news_trf',
-                                        pos_pattern="<NOUN>(<ADP><DET><NOUN>|<ADP><NOUN>|<NOUN><ADJ>|<ADJ>|<NOUN>)",
-                                        use_lemmatizer=True)
+def get_keyphrases(uid, documents, question):
+  vectorizer = KeyphraseTfidfVectorizer(spacy_pipeline="fr_dep_news_trf",
+                                      stop_words=fr_stop,
+                                      pos_pattern="<NOUN>*<ADJ>*")
 
   m = vectorizer.fit_transform(documents)
 
-  phrases = get_top_tfidf_phrases(10, vectorizer, m)
+  phrases = get_top_keyphrases(10, vectorizer, m, question)
 
   json_analysis = build_json(phrases)
   return json_analysis
 
-def get_top_tfidf_phrases(number_phrases, vectorizer, tfidf):
-  return sorted(list(zip(vectorizer.get_feature_names_out(), tfidf.sum(0).getA1())), key=lambda x: x[1], reverse=True)[:number_phrases]
+def get_top_keyphrases(number_phrases, vectorizer, tfidf, debate_question):
+  candidate_keyphrases = sorted(list(zip(vectorizer.get_feature_names_out(), tfidf.sum(0).getA1())), key=lambda x: x[1], reverse=True)
+  final_keyphrases = []
 
-def build_json(phrases, propositions):
+  for candidate in candidate_keyphrases:
+    if len(final_keyphrases) >= number_phrases:
+      break
+
+    if candidate[0] not in debate_question.lower():
+      final_keyphrases.append(candidate)
+
+  return final_keyphrases
+
+def build_json(keyphrases):
   analysis = []
-  for i, k in enumerate(phrases):
-    analysis.append({ "id": i, "name": k[0], "weight": k[1], "level": 1 })
+  for i, k in enumerate(keyphrases):
+    analysis.append({ "id": i, "name": k[0], "weight": k[1] })
   return analysis

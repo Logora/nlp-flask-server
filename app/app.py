@@ -3,10 +3,6 @@ from flask_migrate import Migrate
 from flask_caching import Cache
 from flask_cors import CORS
 #from flasgger import Swagger
-import os
-import sys
-from datetime import datetime
-from dotenv import load_dotenv
 from config import Config
 import psycopg2
 from flask_sqlalchemy import SQLAlchemy
@@ -14,10 +10,9 @@ from flask import request, make_response, jsonify
 from analysis import dummy
 import threading
 from keyphrase_extraction import extract_keyphrases
+from debate_summary import get_keyphrases
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.sql import func
-
-load_dotenv()
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -25,18 +20,11 @@ app.config.from_object(Config)
 db = SQLAlchemy(app)
 Migrate(app, db)
 
-from models import Analysis
+import models
 
 cache = Cache()
 CORS(app)
 
-app.config['SWAGGER'] = {
-    'title': 'Logora NLP',
-    'description': 'A collection of tools to analyse collections of documents.',
-    'version': '1.0.0',
-    'uiversion': 3,
-    'specs_route': '/docs/'
-}
 #swagger = Swagger(app)
 
 
@@ -101,11 +89,11 @@ def get_analysis(uid):
                   description: Analysis content in JSON format
                   example: '{}'
   """
-  analysis = Analysis.query.filter_by(uid=uid).first()
+  analysis = db.session.query(models.Analysis).filter_by(uid=uid).first()
   if analysis is None:
     return make_response(jsonify({"success": False, "error": "Object not found"}), 404)
   else:
-    return jsonify({"success": True, "data": { "uid": analysis.uid, "name": analysis.name, "content": analysis.content }})
+    return jsonify({"success": True, "data": analysis.as_dict()})
 
 # Create analysis
 @app.route('/analysis', methods=['POST'])
@@ -161,7 +149,7 @@ def create_analysis():
     return make_response(jsonify({"success": False, "error": "Missing documents in request body"}), 422)
 
   # Get or create Analysis object
-  analysis = Analysis(uid=uid, name=name, status="pending", started_at=func.now())
+  analysis = models.Analysis(uid=uid, name=name, status="pending", started_at=func.now())
   db.session.merge(analysis)
   db.session.commit()
 
@@ -175,7 +163,7 @@ def create_analysis():
     args = (uid, documents)
   elif name == "debate_summary":
     question = request.args.get('question')
-    target_function = keyphrase_extraction_analysis
+    target_function = debate_summary_analysis
     args = (uid, documents, question)
   else:
     return make_response(jsonify({"success": False, "error": "Analysis name unknown"}), 404)
@@ -186,14 +174,25 @@ def create_analysis():
 
   return jsonify({"success": True, "data": { "uid": uid, "name": name }})
 
+
 def keyphrase_extraction_analysis(uid, documents):
   json_analysis = extract_keyphrases(uid, documents)
-
-  # Store analysis result
-  analysis = Analysis(uid, "keyphrase_extraction", json_analysis, "done")
-  db.session.add(analysis)
-  db.session.commit()
+  store_analysis(uid, "keyphrase_extraction", json_analysis)
   return True
+
+
+def debate_summary_analysis(uid, documents, question):
+  json_analysis = get_keyphrases(uid, documents, question)
+  store_analysis(uid, "debate_summary", json_analysis)
+  return True
+
+
+def store_analysis(uid, name, result):
+   # Store analysis result
+  analysis = models.Analysis(uid=uid, name=name, status="done", content=result, ended_at=func.now())
+  db.session.merge(analysis)
+  db.session.commit()
+
 
 if __name__ == '__main__':
   app.run(debug=False, port=8000)

@@ -12,3 +12,10 @@ class Config(object):
     SECRET_KEY = os.environ.get('SECRET_KEY')
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SWAGGER = {
+        'title': 'Logora NLP',
+        'description': 'A collection of tools to analyse collections of documents.',
+        'version': '1.0.0',
+        'uiversion': 3,
+        'specs_route': '/docs/'
+    }
