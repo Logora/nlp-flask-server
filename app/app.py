@@ -2,16 +2,10 @@ from flask import Flask, request, make_response, jsonify
 from flask_migrate import Migrate
 from flask_caching import Cache
 from flask_cors import CORS
-from flasgger import Swagger
-import logging
-import json_logging
-from json_logging import init_flask, init_request_instrument
-from opentelemetry.instrumentation.flask import FlaskInstrumentor
-import tracer_config
-from logger import logger, JSONRequestLogFormatter, RequestResponseDTO
+#from flasgger import Swagger
 import os
 import sys
-from time import strftime
+from datetime import datetime
 from dotenv import load_dotenv
 from config import Config
 import psycopg2
@@ -21,6 +15,7 @@ from analysis import dummy
 import threading
 from keyphrase_extraction import extract_keyphrases
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.sql import func
 
 load_dotenv()
 
@@ -30,12 +25,10 @@ app.config.from_object(Config)
 db = SQLAlchemy(app)
 Migrate(app, db)
 
-import models
+from models import Analysis
 
 cache = Cache()
 CORS(app)
-
-FlaskInstrumentor().instrument_app(app)
 
 app.config['SWAGGER'] = {
     'title': 'Logora NLP',
@@ -44,7 +37,7 @@ app.config['SWAGGER'] = {
     'uiversion': 3,
     'specs_route': '/docs/'
 }
-swagger = Swagger(app)
+#swagger = Swagger(app)
 
 
 @app.route('/')
@@ -108,7 +101,7 @@ def get_analysis(uid):
                   description: Analysis content in JSON format
                   example: '{}'
   """
-  analysis = models.Analysis.query.filter_by(uid=uid).first()
+  analysis = Analysis.query.filter_by(uid=uid).first()
   if analysis is None:
     return make_response(jsonify({"success": False, "error": "Object not found"}), 404)
   else:
@@ -160,28 +153,30 @@ def create_analysis():
   if not (uid and name):
     return make_response(jsonify({"success": False, "error": "Analysis identifier not provided"}), 422)
 
+  documents = []
+  body = request.json
+  if "documents" in body:
+    documents = body["documents"]
+  else:
+    return make_response(jsonify({"success": False, "error": "Missing documents in request body"}), 422)
+
+  # Get or create Analysis object
+  analysis = Analysis(uid=uid, name=name, status="pending", started_at=func.now())
+  db.session.merge(analysis)
+  db.session.commit()
+
   target_function = None
   args = ()
 
   if name == "test":
     content = dummy(request.json)
   elif name == "keyphrase_extraction":
-    body = request.json
-    if "documents" in body:
-      documents = body["documents"]
-      target_function = keyphrase_extraction_analysis
-      args = (uid, documents)
-    else:
-      return make_response(jsonify({"success": False, "error": "Request malformed"}), 400)
+    target_function = keyphrase_extraction_analysis
+    args = (uid, documents)
   elif name == "debate_summary":
-    body = request.json
     question = request.args.get('question')
-    if "documents" in body:
-      documents = body["documents"]
-      target_function = keyphrase_extraction_analysis
-      args = (uid, documents, question)
-    else:
-      return make_response(jsonify({"success": False, "error": "Request malformed"}), 400)
+    target_function = keyphrase_extraction_analysis
+    args = (uid, documents, question)
   else:
     return make_response(jsonify({"success": False, "error": "Analysis name unknown"}), 404)
 
@@ -195,13 +190,10 @@ def keyphrase_extraction_analysis(uid, documents):
   json_analysis = extract_keyphrases(uid, documents)
 
   # Store analysis result
-  analysis = models.Analysis(uid, "keyphrase_extraction", json_analysis, "done")
+  analysis = Analysis(uid, "keyphrase_extraction", json_analysis, "done")
   db.session.add(analysis)
   db.session.commit()
   return True
 
 if __name__ == '__main__':
-  init_flask(enable_json=True)
-  init_request_instrument(app, JSONRequestLogFormatter, [], RequestResponseDTO)
-
   app.run(debug=False, port=8000)
