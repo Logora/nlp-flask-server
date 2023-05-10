@@ -188,10 +188,12 @@ def debate_summary_analysis(uid, documents, question):
 
 
 def store_analysis(uid, name, result):
-   # Store analysis result
+  # Store analysis result
   analysis = models.Analysis(uid=uid, name=name, status="done", content=result, ended_at=func.now())
-  db.session.merge(analysis)
-  db.session.commit()
+  
+  with app.app_context():
+    db.session.merge(analysis)
+    db.session.commit()
 
 
 if __name__ == '__main__':
