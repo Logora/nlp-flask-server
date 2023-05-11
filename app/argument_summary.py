@@ -27,7 +27,7 @@ def get_summary(uid, documents, question):
     {text}
     
     Résume ces contributions en affichant les trois arguments les plus récurrents. Pour chaque argument, donne aussi leur nombre d'occurrences dans les contributions.
-    Ces arguments doivent être de 180 caractères maximum chacun et être classés du plus récurrent au moins récurrent.
+    Ces arguments doivent être de 200 caractères maximum chacun et être classés du plus récurrent au moins récurrent.
 
     ARGUMENTS:"""
   map_prompt = PromptTemplate(template=map_template, input_variables=['text', 'question'])
@@ -39,7 +39,7 @@ def get_summary(uid, documents, question):
     {text}
     
     Résume ces arguments en affichant les trois arguments les plus récurrents. Pour chaque argument, ajoute aussi leur nombre d'occurrences.
-    Ces arguments doivent être de 180 caractères maximum chacun et être classés du plus récurrent au moins récurrent, et sous format JSON.
+    Ces arguments doivent être de 200 caractères maximum chacun et être classés du plus récurrent au moins récurrent, et sous format JSON.
 
     ARGUMENTS:"""
   reduce_prompt = PromptTemplate(template=reduce_template, input_variables=['text', 'question'])
