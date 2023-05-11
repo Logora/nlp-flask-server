@@ -4,7 +4,7 @@ from keyphrase_vectorizers import KeyphraseTfidfVectorizer
 from spacy.lang.fr.stop_words import STOP_WORDS as fr_stop
 
 def get_keyphrases(uid, documents, question):
-  vectorizer = KeyphraseTfidfVectorizer(spacy_pipeline="fr_dep_news_trf",
+  vectorizer = KeyphraseTfidfVectorizer(spacy_pipeline="fr_core_news_md",
                                       stop_words=fr_stop,
                                       pos_pattern="<NOUN>*<ADJ>*")
 

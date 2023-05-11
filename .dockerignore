@@ -8,6 +8,7 @@ notebooks/*
 scripts/*
 __pycache__/*
 data/messages_*
+app/__pycache__/*
 
 .DS_Store
 .env
