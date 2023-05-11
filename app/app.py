@@ -2,7 +2,7 @@ from flask import Flask, request, make_response, jsonify
 from flask_migrate import Migrate
 from flask_caching import Cache
 from flask_cors import CORS
-#from flasgger import Swagger
+from flasgger import Swagger
 from config import Config
 import psycopg2
 from flask_sqlalchemy import SQLAlchemy
@@ -25,8 +25,7 @@ import models
 cache = Cache()
 CORS(app)
 
-#swagger = Swagger(app)
-
+swagger = Swagger(app)
 
 @app.route('/')
 def status():
@@ -110,8 +109,12 @@ def create_analysis():
       - name: name
         in: query
         type: string
-        enum: ['test']
+        enum: ['test', 'keyphrase_extraction', 'argument_summary']
         required: true
+      - name: question
+        in: query
+        type: string
+        required: false
     responses:
       200:
         description: Analysis content
