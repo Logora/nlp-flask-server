@@ -29,7 +29,9 @@ def get_top_keyphrases(number_phrases, vectorizer, tfidf, debate_question):
   return final_keyphrases
 
 def build_json(keyphrases):
-  analysis = []
+  analysis = {}
+  keyphrase_objects = []
   for i, k in enumerate(keyphrases):
-    analysis.append({ "id": i, "name": k[0], "weight": k[1] })
+    keyphrase_objects.append({ "id": i, "name": k[0], "weight": k[1] })
+  analysis['keyphrases'] = keyphrase_objects
   return analysis

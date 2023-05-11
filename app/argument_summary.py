@@ -53,7 +53,9 @@ def get_summary(uid, documents, question):
   return json_analysis
 
 def build_json(arguments):
-  analysis = []
+  analysis = {}
+  argument_objects = []
   for i, k in enumerate(arguments):
-    analysis.append({ "id": i, "argument": k["argument"], "weight": k["occurrences"] })
+    argument_objects.append({ "id": i, "argument": k["argument"], "weight": k["occurrences"] })
+  analysis['arguments'] = argument_objects
   return analysis
