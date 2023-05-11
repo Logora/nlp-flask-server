@@ -32,7 +32,7 @@ def status():
   """Status endpoint.
     ---
     tags:
-      - status
+      - Status
     responses:
       200:
         description: A success message
@@ -56,7 +56,7 @@ def get_analysis(uid):
   """Get analysis.
     ---
     tags:
-      - analysis
+      - Analysis
     parameters:
       - name: uid
         in: path
@@ -82,7 +82,7 @@ def get_analysis(uid):
                 name:
                   type: string
                   description: Analysis name
-                  example: 'keyword_extraction'
+                  example: 'keyphrase_extraction'
                 content:
                   type: string
                   description: Analysis content in JSON format
@@ -135,7 +135,7 @@ def create_analysis():
                 name:
                   type: string
                   description: Analysis name
-                  example: 'keyword_extraction'
+                  example: 'keyphrase_extraction'
   """
   uid = request.args.get('uid')
   name = request.args.get('name')
