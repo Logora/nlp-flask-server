@@ -12,4 +12,7 @@ pandas==2.0.1
 --find-links https://download.pytorch.org/whl/torch_stable.html
 torch==1.9.1+cpu
 keyphrase-vectorizers==0.0.11
+langchain==0.0.165
+openai==0.27.6
+tiktoken==0.4.0
 https://github.com/explosion/spacy-models/releases/download/fr_dep_news_trf-3.2.0/fr_dep_news_trf-3.2.0.tar.gz#egg=fr_dep_news_trf
