@@ -4,8 +4,9 @@ from keyphrase_vectorizers import KeyphraseTfidfVectorizer
 from spacy.lang.fr.stop_words import STOP_WORDS as fr_stop
 
 def get_keyphrases(uid, documents, question):
+  stop_words = list(fr_stop) + ['oui', 'non']
   vectorizer = KeyphraseTfidfVectorizer(spacy_pipeline="fr_core_news_md",
-                                      stop_words=fr_stop,
+                                      stop_words=stop_words,
                                       pos_pattern="<NOUN>*<ADJ>*")
 
   m = vectorizer.fit_transform(documents)
