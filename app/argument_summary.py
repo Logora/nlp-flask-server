@@ -26,7 +26,7 @@ def get_summary(uid, documents, question):
 
     {text}
     
-    Résume ces contributions en affichant les trois arguments les plus récurrents. Pour chaque argument, donne aussi leur nombre d'occurrences dans les contributions.
+    Résume ces contributions en affichant les trois arguments les plus récurrents. Pour chaque argument, donne aussi la récurrence de ces arguments (de 0 à 5, 5 étant le plus récurrent).
     Ces arguments doivent être de 250 caractères maximum chacun et être classés du plus récurrent au moins récurrent.
 
     ARGUMENTS:"""
@@ -38,7 +38,7 @@ def get_summary(uid, documents, question):
 
     {text}
     
-    Résume ces arguments en affichant les trois arguments les plus récurrents. Pour chaque argument, ajoute aussi leur nombre d'occurrences.
+    Résume ces arguments en affichant les trois arguments les plus récurrents. Pour chaque argument, donne aussi la récurrence de ces arguments (de 0 à 5, 5 étant le plus récurrent).
     Ces arguments doivent être de 250 caractères maximum chacun et être classés du plus récurrent au moins récurrent, et sous format JSON.
 
     ARGUMENTS:"""
