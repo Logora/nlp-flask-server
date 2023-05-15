@@ -153,7 +153,7 @@ def create_analysis():
     return make_response(jsonify({"success": False, "error": "Missing documents in request body"}), 422)
 
   # Get or create Analysis object
-  analysis = models.Analysis(uid=uid, name=name, status="pending", started_at=time.strptime(func.now(), "%Y-%m-%dT%H:%M:%SZ"))
+  analysis = models.Analysis(uid=uid, name=name, status="pending", started_at=func.now())
   db.session.merge(analysis)
   db.session.commit()
 
@@ -194,7 +194,7 @@ def argument_summary_analysis(uid, documents, question):
 
 def store_analysis(uid, name, result):
   # Store analysis result
-  analysis = models.Analysis(uid=uid, name=name, status="done", content=result, ended_at=time.strptime(func.now(), "%Y-%m-%dT%H:%M:%SZ"))
+  analysis = models.Analysis(uid=uid, name=name, status="done", content=result, ended_at=func.now())
   
   with app.app_context():
     db.session.merge(analysis)
