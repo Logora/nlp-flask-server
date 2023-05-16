@@ -39,7 +39,7 @@ def get_summary(uid, documents, question):
     {text}
     
     Résume ces arguments en affichant les trois arguments les plus récurrents. Pour chaque argument, donne aussi la récurrence de ces arguments (de 0 à 5, 5 étant le plus récurrent).
-    Ces arguments doivent être de 250 caractères maximum chacun et être classés du plus récurrent au moins récurrent, et sous format JSON.
+    Ces arguments doivent être de 250 caractères maximum chacun et être classés du plus récurrent au moins récurrent, et sous format JSON, avec les clés "argument" et "occurrences".
 
     ARGUMENTS:"""
   reduce_prompt = PromptTemplate(template=reduce_template, input_variables=['text', 'question'])
