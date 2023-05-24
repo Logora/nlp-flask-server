@@ -43,6 +43,6 @@ def build_json(keyphrases, keyphrase_frequency):
   analysis = {}
   keyphrase_objects = []
   for i, k in enumerate(keyphrases):
-    keyphrase_objects.append({ "id": i, "name": k[0], "weight": int(keyphrase_frequency[i]) })
+    keyphrase_objects.append({ "id": i, "name": k[0], "frequency": int(keyphrase_frequency[i]) })
   analysis['keyphrases'] = keyphrase_objects
   return analysis
