@@ -5,52 +5,46 @@ from langchain.docstore.document import Document
 from langchain import LLMChain, PromptTemplate
 from langchain.llms import OpenAI
 from langchain.chains.summarize import load_summarize_chain
+from prompts import map_templates, reduce_templates
 
-def get_summary(uid, documents, question):
-  separator = "\n\n--------------------\n\n"
-  long_text = separator.join(documents)
+def get_summary(uid, documents, question, language='fr', model_name='text-davinci-003'):
+    """
+    Get the summary of arguments based on documents and a given question.
 
-  text_splitter = CharacterTextSplitter(        
-      separator=separator,
-      chunk_overlap=0
-  )
+    Args:
+        uid (str): Unique ID.
+        documents (List[str]): List of documents containing contributions.
+        question (str): The debate question.
+        map_template (str): Template for the map_prompt.
+        reduce_template (str): Template for the reduce_prompt.
+        model_name (str, optional): Name of the OpenAI model. Defaults to 'text-davinci-003'.
 
-  texts = text_splitter.split_text(long_text)
-  docs = [Document(page_content=t) for t in texts]
+    Returns:
+        dict: JSON analysis of the most recurrent arguments.
+    """
+    separator = "\n\n--------------------\n\n"
+    long_text = separator.join(documents)
 
-  llm = OpenAI(temperature=0, model_name='text-davinci-003', batch_size=10)
+    text_splitter = CharacterTextSplitter(        
+        separator=separator,
+        chunk_overlap=0
+    )
 
-  map_template = """
-    Ta tâche est de résumer des contributions de personnes ayant répondu au débat suivant : {question}.
-    Voici les contributions séparées par une ligne :
+    texts = text_splitter.split_text(long_text)
+    docs = [Document(page_content=t) for t in texts]
 
-    {text}
-    
-    Résume ces contributions en affichant les trois arguments les plus récurrents. Pour chaque argument, donne aussi la récurrence de ces arguments (de 0 à 5, 5 étant le plus récurrent).
-    Ces arguments doivent être de 250 caractères maximum chacun et être classés du plus récurrent au moins récurrent.
+    llm = OpenAI(temperature=0, model_name=model_name, batch_size=10)
 
-    ARGUMENTS:"""
-  map_prompt = PromptTemplate(template=map_template, input_variables=['text', 'question'])
+    map_prompt = PromptTemplate(template=map_templates.get(language), input_variables=['text', 'question'])
+    reduce_prompt = PromptTemplate(template=reduce_templates.get(language), input_variables=['text', 'question'])
 
-  reduce_template = """
-    Ta tâche est de résumer des arguments en réponse au débat suivant : {question}.
-    Voici les arguments séparées par une ligne :
+    chain = load_summarize_chain(llm, chain_type="map_reduce", map_prompt=map_prompt, combine_prompt=reduce_prompt)
 
-    {text}
-    
-    Résume ces arguments en affichant les trois arguments les plus récurrents. Pour chaque argument, donne aussi la récurrence de ces arguments (de 0 à 5, 5 étant le plus récurrent).
-    Ces arguments doivent être de 250 caractères maximum chacun et être classés du plus récurrent au moins récurrent, et sous format JSON, avec les clés "argument" et "occurrences".
+    output = chain({"input_documents": docs, "question": question})
 
-    ARGUMENTS:"""
-  reduce_prompt = PromptTemplate(template=reduce_template, input_variables=['text', 'question'])
-
-  chain = load_summarize_chain(llm, chain_type="map_reduce", map_prompt=map_prompt, combine_prompt=reduce_prompt)
-
-  output = chain({"input_documents": docs, "question": question})
-
-  arguments = json.loads(output['output_text'])
-  json_analysis = build_json(arguments)
-  return json_analysis
+    arguments = json.loads(output['output_text'])
+    json_analysis = build_json(arguments)
+    return json_analysis
 
 def build_json(arguments):
   analysis = {}
