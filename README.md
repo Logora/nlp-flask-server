@@ -24,7 +24,12 @@ pip install -r requirements.txt
 ```
 
 ## Utilisation
+- Créer un fichier .env avec les bonnes variables d'environnement. Prendre pour exemple .env.example
 
+- Lancer la migration initiale : 
+```bash
+flask db upgrade
+```
 
 ### API
 - Utiliser le fichier app.py
