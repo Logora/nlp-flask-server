@@ -2,15 +2,16 @@ from flask import Flask, request, make_response, jsonify
 from flask_migrate import Migrate
 from flask_caching import Cache
 from flask_cors import CORS
-#from flasgger import Swagger
+from flasgger import Swagger
 from config import Config
 import psycopg2
+import time
 from flask_sqlalchemy import SQLAlchemy
 from flask import request, make_response, jsonify
 from analysis import dummy
 import threading
-from keyphrase_extraction import extract_keyphrases
-from debate_summary import get_keyphrases
+from keyphrase_extraction import get_keyphrases
+from argument_summary import get_summary
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.sql import func
 
@@ -25,15 +26,14 @@ import models
 cache = Cache()
 CORS(app)
 
-#swagger = Swagger(app)
-
+swagger = Swagger(app)
 
 @app.route('/')
 def status():
   """Status endpoint.
     ---
     tags:
-      - status
+      - Status
     responses:
       200:
         description: A success message
@@ -47,9 +47,9 @@ def status():
             status:
               type: string
               description: Status message.
-              example: 'everything is allright'
+              example: 'everything is alright'
   """
-  return jsonify({"name": "Logora NLP", "status": "everything is allright"})
+  return jsonify({"name": "Logora NLP", "status": "everything is alright"})
 
 # Get analysis
 @app.route('/analysis/<uid>', methods=['GET'])
@@ -57,7 +57,7 @@ def get_analysis(uid):
   """Get analysis.
     ---
     tags:
-      - analysis
+      - Analysis
     parameters:
       - name: uid
         in: path
@@ -83,7 +83,7 @@ def get_analysis(uid):
                 name:
                   type: string
                   description: Analysis name
-                  example: 'keyword_extraction'
+                  example: 'keyphrase_extraction'
                 content:
                   type: string
                   description: Analysis content in JSON format
@@ -110,8 +110,12 @@ def create_analysis():
       - name: name
         in: query
         type: string
-        enum: ['test']
+        enum: ['test', 'keyphrase_extraction', 'argument_summary']
         required: true
+      - name: question
+        in: query
+        type: string
+        required: false
     responses:
       200:
         description: Analysis content
@@ -132,7 +136,7 @@ def create_analysis():
                 name:
                   type: string
                   description: Analysis name
-                  example: 'keyword_extraction'
+                  example: 'keyphrase_extraction'
   """
   uid = request.args.get('uid')
   name = request.args.get('name')
@@ -159,11 +163,12 @@ def create_analysis():
   if name == "test":
     content = dummy(request.json)
   elif name == "keyphrase_extraction":
-    target_function = keyphrase_extraction_analysis
-    args = (uid, documents)
-  elif name == "debate_summary":
     question = request.args.get('question')
-    target_function = debate_summary_analysis
+    target_function = keyphrase_extraction_analysis
+    args = (uid, documents, question)
+  elif name == "argument_summary":
+    question = request.args.get('question')
+    target_function = argument_summary_analysis
     args = (uid, documents, question)
   else:
     return make_response(jsonify({"success": False, "error": "Analysis name unknown"}), 404)
@@ -175,15 +180,15 @@ def create_analysis():
   return jsonify({"success": True, "data": { "uid": uid, "name": name }})
 
 
-def keyphrase_extraction_analysis(uid, documents):
-  json_analysis = extract_keyphrases(uid, documents)
+def keyphrase_extraction_analysis(uid, documents, question):
+  json_analysis = get_keyphrases(uid, documents, question)
   store_analysis(uid, "keyphrase_extraction", json_analysis)
   return True
 
 
-def debate_summary_analysis(uid, documents, question):
-  json_analysis = get_keyphrases(uid, documents, question)
-  store_analysis(uid, "debate_summary", json_analysis)
+def argument_summary_analysis(uid, documents, question):
+  json_analysis = get_summary(uid, documents, question)
+  store_analysis(uid, "argument_summary", json_analysis)
   return True
 
 
