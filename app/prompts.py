@@ -43,5 +43,9 @@ reduce_templates = {
         Chaque argument type doit être formulé en maximum 250 caractères et être classé par ordre de récurrence, du plus au moins fréquent. 
         Indiquez également le niveau de récurrence de chaque argument type sur une échelle de 0 à 5.
 
+        FORMAT DE RÉSULTAT: 
+        "1. [Argument type]. (X/5)"
+        Où X est le niveau de récurrence de l'argument type sur une échelle de 0 à 5.
+
         ARGUMENTS:"""
 }
