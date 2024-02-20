@@ -10,13 +10,14 @@ map_templates = {
 
         ARGUMENTS:""",
     'fr': """
-        Ta tâche est de résumer des contributions de personnes ayant répondu au débat suivant : {question}.
-        Voici les contributions séparées par une ligne :
+        Vous êtes chargé(e) de synthétiser les idées principales des arguments exprimés par les participants à ce débat sur {question}. 
+        Leurs interventions sont présentées ci-dessous, séparées par des lignes :
 
         {text}
 
-        Résume ces contributions en affichant les trois arguments les plus récurrents. Pour chaque argument, donne aussi la récurrence de ces arguments (de 0 à 5, 5 étant le plus récurrent).
-        Ces arguments doivent être de 250 caractères maximum chacun et être classés du plus récurrent au moins récurrent.
+        Votre mission consiste à générer trois arguments types qui récapitulent les tendances et consensus des arguments individuels. 
+        Chaque argument type doit être formulé en maximum 250 caractères et être classé par ordre de récurrence, du plus au moins fréquent. 
+        Indiquez également le niveau de récurrence de chaque argument type sur une échelle de 0 à 5.
 
         ARGUMENTS:"""
 }
@@ -33,13 +34,14 @@ reduce_templates = {
 
         ARGUMENTS:""",
     'fr': """
-        Ta tâche est de résumer des arguments en réponse au débat suivant : {question}.
-        Voici les arguments séparées par une ligne :
+        Vous êtes chargé(e) de synthétiser les idées principales des arguments exprimés par les participants à ce débat sur {question}. 
+        Leurs interventions sont présentées ci-dessous, séparées par des lignes :
 
         {text}
 
-        Résume ces arguments en affichant les trois arguments les plus récurrents. Pour chaque argument, donne aussi la récurrence de ces arguments (de 0 à 5, 5 étant le plus récurrent).
-        Ces arguments doivent être de 250 caractères maximum chacun et être classés du plus récurrent au moins récurrent, et sous format JSON, avec les clés "argument" et "occurrences".
+        Votre mission consiste à générer trois arguments types qui récapitulent les tendances et consensus des arguments individuels. 
+        Chaque argument type doit être formulé en maximum 250 caractères et être classé par ordre de récurrence, du plus au moins fréquent. 
+        Indiquez également le niveau de récurrence de chaque argument type sur une échelle de 0 à 5.
 
         ARGUMENTS:"""
 }
