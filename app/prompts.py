@@ -19,6 +19,10 @@ map_templates = {
         Chaque argument type doit être formulé en maximum 250 caractères et être classé par ordre de récurrence, du plus au moins fréquent. 
         Indiquez également le niveau de récurrence de chaque argument type sur une échelle de 0 à 5.
 
+        FORMAT DE RÉSULTAT: 
+        "1. [Argument type]. (X/5)"
+        Où X est le niveau de récurrence de l'argument type sur une échelle de 0 à 5.
+
         ARGUMENTS:"""
 }
 
@@ -46,6 +50,7 @@ reduce_templates = {
         FORMAT DE RÉSULTAT: 
         "1. [Argument type]. (X/5)"
         Où X est le niveau de récurrence de l'argument type sur une échelle de 0 à 5.
+        Il doit n'y avoir que 3 arguments impérativement. Chaque argument possède un numéro unique.
 
         ARGUMENTS:"""
 }

@@ -11,7 +11,7 @@ params = {
 }
 
 body = {
-    'documents': arguments["first_position"]
+    'documents': arguments["second_position"]
 }
 response = requests.post(url, params=params, json=body)
 print(response.json())
