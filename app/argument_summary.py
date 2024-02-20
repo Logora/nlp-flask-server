@@ -49,7 +49,6 @@ def get_summary(uid, documents, question, language='fr', model_name='gpt-3.5-tur
     
     arguments = []
 
-    print(points)
     for point in points:
         index, rest = point.split(".", 1)
         description, recurrence = rest.split("(Récurrence: ", 1)
@@ -60,7 +59,6 @@ def get_summary(uid, documents, question, language='fr', model_name='gpt-3.5-tur
             "occurrences": weight
         })
 
-    print(arguments)
     json_analysis = build_json(arguments)
     return json_analysis
 
