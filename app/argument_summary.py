@@ -44,14 +44,28 @@ def get_summary(uid, documents, question, language='fr', model_name='gpt-3.5-tur
 
     output = chain({"input_documents": docs, "question": question})
 
-    arguments = json.loads(output['output_text'])
+    output_text = output['output_text']
+    points = [point.strip() for point in output_text.split("\n\n") if point.strip()]
+    
+    arguments = []
+
+    for point in points:
+        index, rest = point.split(".", 1)
+        description, recurrence = rest.split("(Récurrence: ", 1)
+        weight = recurrence.split("/")[0]
+        arguments.append({
+            "id": index.strip(),
+            "argument": description.strip(),
+            "occurrences": weight
+        })
+
     json_analysis = build_json(arguments)
     return json_analysis
 
 def build_json(arguments):
-  analysis = {}
-  argument_objects = []
-  for i, k in enumerate(arguments):
-    argument_objects.append({ "id": i, "argument": k["argument"], "weight": k["occurrences"] })
-  analysis['arguments'] = argument_objects
-  return analysis
+    analysis = {}
+    argument_objects = []
+    for i, k in enumerate(arguments):
+        argument_objects.append({ "id": i, "argument": k["argument"], "weight": k["occurrences"] })
+    analysis['arguments'] = argument_objects
+    return analysis
