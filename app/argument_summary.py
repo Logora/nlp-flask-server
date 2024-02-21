@@ -2,7 +2,8 @@ import pandas as pd
 import json
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.docstore.document import Document
-from langchain import LLMChain, PromptTemplate
+from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
 from langchain_openai import OpenAI
 from langchain.chains.summarize import load_summarize_chain
 from prompts import map_templates, reduce_templates
