@@ -8,6 +8,7 @@ params = {
     'uid': 'argument-summary-9520-1',
     'name': 'argument_summary',
     'question': arguments["question"],
+    'language': 'en'
 }
 
 body = {

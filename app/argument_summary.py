@@ -20,7 +20,7 @@ def get_summary(uid, documents, question, language='fr', model_name='gpt-3.5-tur
         language (str): The analysis language.
         map_template (str): Template for the map_prompt.
         reduce_template (str): Template for the reduce_prompt.
-        model_name (str, optional): Name of the OpenAI model. Defaults to 'text-davinci-003'.
+        model_name (str, optional): Name of the OpenAI model. Defaults to 'gpt-3.5-turbo-instruct'.
 
     Returns:
         dict: JSON analysis of the most recurrent arguments.
@@ -49,6 +49,9 @@ def get_summary(uid, documents, question, language='fr', model_name='gpt-3.5-tur
     points = [point.strip() for point in output_text.split("\n") if point.strip()]
     
     arguments = []
+
+    print(output_text)
+    print(points)
 
     for point in points:
         index, rest = point.split(".", 1)

@@ -22,6 +22,14 @@ map_templates = {
         FORMAT DE RÉSULTAT: 
         "1. [Argument type]. (X/5)"
         Où X est le niveau de récurrence de l'argument type sur une échelle de 0 à 5.
+        Il doit n'y avoir que 3 arguments impérativement. Chaque argument possède un numéro unique.
+
+        EXEMPLE DE RÉSULTAT:
+        "1. [Argument type]. (X/5)"
+        "2. [Autre argument type]. (X/5)"
+        "3. [Autre argument type]. (X/5)"
+
+        Le résultat doit suivre exactement la ponctuation de l'exemple ci-dessus.
 
         ARGUMENTS:"""
 }
@@ -57,7 +65,7 @@ reduce_templates = {
         "2. [Autre argument type]. (X/5)"
         "3. [Autre argument type]. (X/5)"
 
-        Le résultat doit toujours suivre le format de l'exemple. L'échelle de 0 à 5 doit toujours être entre paranthèses.
+        Le résultat doit suivre exactement la ponctuation de l'exemple ci-dessus.
 
         ARGUMENTS:"""
 }
