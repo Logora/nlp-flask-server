@@ -9,7 +9,7 @@ from langchain.chains.summarize import load_summarize_chain
 from prompts import map_templates, reduce_templates
 from config import Config
 
-def get_summary(uid, documents, question, language='fr', model_name='gpt-3.5-turbo-instruct'):
+def get_summary(uid, documents, question, language, model_name='gpt-3.5-turbo-instruct'):
     """
     Get the summary of arguments based on documents and a given question.
 
