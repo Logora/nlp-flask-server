@@ -116,6 +116,10 @@ def create_analysis():
         in: query
         type: string
         required: false
+      - name: language
+        in: query
+        type: string
+        required: false
     responses:
       200:
         description: Analysis content
@@ -140,7 +144,7 @@ def create_analysis():
   """
   uid = request.args.get('uid')
   name = request.args.get('name')
-  language = request.args.get('language')
+  language = request.args.get('language') or "fr"
 
   if not (uid and name):
     return make_response(jsonify({"success": False, "error": "Analysis identifier not provided"}), 422)
@@ -169,7 +173,7 @@ def create_analysis():
   elif name == "argument_summary":
     question = request.args.get('question')
     target_function = argument_summary_analysis
-    args = (uid, documents, question)
+    args = (uid, documents, question, language)
   else:
     return make_response(jsonify({"success": False, "error": "Analysis name unknown"}), 404)
 
@@ -186,8 +190,8 @@ def keyphrase_extraction_analysis(uid, documents, question):
   return True
 
 
-def argument_summary_analysis(uid, documents, question):
-  json_analysis = get_summary(uid, documents, question)
+def argument_summary_analysis(uid, documents, question, language):
+  json_analysis = get_summary(uid, documents, question, language)
   store_analysis(uid, "argument_summary", json_analysis)
   return True
 
