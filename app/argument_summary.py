@@ -3,10 +3,10 @@ import json
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.docstore.document import Document
 from langchain.prompts import PromptTemplate
-from langchain.chains import LLMChain
+from langchain.chains import StuffDocumentsChain, LLMChain
 from langchain_openai import OpenAI
 from langchain.chains.summarize import load_summarize_chain
-from prompts import map_templates, reduce_templates
+from prompts import summarize_templates
 from config import Config
 
 def get_summary(uid, documents, question, language='fr', model_name='gpt-3.5-turbo-instruct'):
@@ -17,48 +17,26 @@ def get_summary(uid, documents, question, language='fr', model_name='gpt-3.5-tur
         uid (str): Unique ID.
         documents (List[str]): List of documents containing contributions.
         question (str): The debate question.
-        language (str): The analysis language.
+        language (str): The analysis language. Defaults to 'fr'
         map_template (str): Template for the map_prompt.
         reduce_template (str): Template for the reduce_prompt.
-        model_name (str, optional): Name of the OpenAI model. Defaults to 'text-davinci-003'.
+        model_name (str, optional): Name of the OpenAI model. Defaults to 'gpt-3.5-turbo-instruct'.
 
     Returns:
         dict: JSON analysis of the most recurrent arguments.
     """
-    separator = "\n\n--------------------\n\n"
-    long_text = separator.join(documents)
+    docs = [Document(page_content=content) for content in documents]
 
-    text_splitter = CharacterTextSplitter(        
-        separator=separator,
-        chunk_overlap=0
-    )
+    summarize_prompt = PromptTemplate(template=summarize_templates.get(language), input_variables=['text', 'question'])
 
-    texts = text_splitter.split_text(long_text)
-    docs = [Document(page_content=t) for t in texts]
-
-    llm = OpenAI(temperature=0, model_name=model_name, batch_size=10, openai_api_key=Config.OPENAI_API_KEY)
-
-    map_prompt = PromptTemplate(template=map_templates.get(language), input_variables=['text', 'question'])
-    reduce_prompt = PromptTemplate(template=reduce_templates.get(language), input_variables=['text', 'question'])
-
-    chain = load_summarize_chain(llm, chain_type="map_reduce", map_prompt=map_prompt, combine_prompt=reduce_prompt)
-
-    output = chain({"input_documents": docs, "question": question})
-
-    output_text = output['output_text']
-    points = [point.strip() for point in output_text.split("\n") if point.strip()]
+    llm = OpenAI(temperature=0, model_name=model_name, openai_api_key=Config.OPENAI_API_KEY)
+    llm_chain = LLMChain(llm=llm, prompt=summarize_prompt)
     
-    arguments = []
+    stuff_chain = StuffDocumentsChain(llm_chain=llm_chain, document_variable_name="text")
 
-    for point in points:
-        index, rest = point.split(".", 1)
-        description, recurrence = rest.split("(", 1)
-        weight = recurrence.split("/")[0]
-        arguments.append({
-            "id": index.strip(),
-            "argument": description.strip(),
-            "occurrences": weight
-        })
+    output = stuff_chain.run(question=question, input_documents=docs)
+    json_output = json.loads(output)
+    arguments = json_output["arguments"]
 
     json_analysis = build_json(arguments)
     return json_analysis
