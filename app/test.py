@@ -1,12 +1,12 @@
 from app import argument_summary_analysis
-from seeds import arguments
+from seeds import arguments, arguments_1
 import requests
 import json
 from argument_summary import get_summary
 
 url = 'http://localhost:8000/analysis'
 params = {
-    'uid': 'argument-summary-9520-1',
+    'uid': 'argument-summary-1',
     'name': 'argument_summary',
     'question': arguments["question"],
     'language': 'en'
@@ -33,5 +33,7 @@ body = {
         Jamais le résultat serait mettre la France  l'Europe en état de guerre larvée avec la Russie, la Chine, l'Inde, la corée du nord ainsi que tous les pays du sud global se  serait le début de la 3ème guerre mondiale.'''
     ]
 }
-response = get_summary(params['uid'], body['documents'], arguments["question"])
-print(response)
+print(get_summary('argument-summary-1-1', arguments['first_position'], arguments["question"]))
+print(get_summary('argument-summary-1-2', arguments['second_position'], arguments["question"]))
+print(get_summary('argument-summary-2-1', arguments_1['first_position'], arguments_1["question"]))
+print(get_summary('argument-summary-2-2', arguments_1['second_position'], arguments_1["question"]))

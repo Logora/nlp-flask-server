@@ -11,14 +11,16 @@ summarize_templates = {
         ARGUMENTS:""",
     'fr': 
         """
-        Vous êtes chargé(e) de synthétiser les idées principales des arguments exprimés par les participants à ce débat sur {question}. 
-        Leurs contributions sont présentées ci-dessous, séparées par des lignes :
+
+        Vous devez synthétiser les idées principales des arguments exprimés par les participants à ce débat sur {question}. 
+        Leurs arguments sont présentés ci-dessous, séparés par des lignes :
 
         {text}
 
-        Votre mission consiste à générer trois arguments types qui récapitulent les tendances et consensus des arguments individuels. 
+        Vous devez générer trois arguments types qui récapitulent les tendances et consensus des arguments individuels.
         Chaque argument type doit être formulé en maximum 250 caractères et être classé par ordre de récurrence, du plus au moins fréquent. 
         Indiquez également le niveau de récurrence de chaque argument type sur une échelle de 0 à 5.
-        Le résultat doit être un objet JSON avec une clé "arguments" qui contient la liste des arguments, avec les clés "argument" et "occurrences".
+        Le résultat doit être sous format JSON, avec les clés "argument" et "occurrences".
+        {response_format}
         """
 }

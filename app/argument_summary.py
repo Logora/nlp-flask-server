@@ -1,9 +1,10 @@
 import pandas as pd
 import json
+import re
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.docstore.document import Document
 from langchain.prompts import PromptTemplate
-from langchain.chains.summarize import load_summarize_chain
+from langchain.output_parsers import ResponseSchema, StructuredOutputParser
 from langchain.chains.combine_documents.stuff import StuffDocumentsChain
 from langchain.chains.llm import LLMChain
 from langchain_openai import ChatOpenAI
@@ -27,23 +28,42 @@ def get_summary(uid, documents, question, language='fr', model_name='gpt-3.5-tur
         dict: JSON analysis of the most recurrent arguments.
     """
     MAX_PROMPT_LENGTH = 15000
+
+    argument = ResponseSchema(
+        name="argument",
+        description="The summarized argument string.",
+    )
+    occurences = ResponseSchema(
+        name="occurences",
+        description="The recurrence of these arguments (from 0 to 5, with 5 being the most recurring)",
+    )
+    output_parser = StructuredOutputParser.from_response_schemas(
+        [argument, occurences]
+    )
+    response_format = output_parser.get_format_instructions()
+
     docs = [Document(page_content=content) for content in documents]
 
     summarize_prompt = PromptTemplate(template=summarize_templates.get(language), input_variables=['text', 'question'])
 
     llm = ChatOpenAI(temperature=0, model_name=model_name, openai_api_key=Config.OPENAI_API_KEY)
     llm_chain = LLMChain(llm=llm, prompt=summarize_prompt)
-    stuff_chain = StuffDocumentsChain(llm_chain=llm_chain, document_variable_name="text")
     
+    stuff_chain = StuffDocumentsChain(llm_chain=llm_chain, document_variable_name="text")
+
     while True:
-        prompt_length = stuff_chain.prompt_length(docs, question=question)
+        prompt_length = stuff_chain.prompt_length(docs, question=question, response_format=response_format)
         if prompt_length > MAX_PROMPT_LENGTH:
             docs.pop()
         else:
             break
-
-    output = stuff_chain.run(question=question, input_documents=docs)
-    arguments = json.loads(output)['arguments']
+            
+    output = stuff_chain.run(question=question, input_documents=docs, response_format=response_format)
+    
+    json_objects = re.findall(r'{.*?}', output, flags=re.DOTALL)
+    arguments = []
+    for obj in json_objects: arguments.append(json.loads(obj))
+    output_json = {"arguments": arguments}
 
     json_analysis = build_json(arguments)
     return json_analysis
