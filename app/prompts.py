@@ -21,6 +21,6 @@ summarize_templates = {
         Chaque argument type doit être formulé en maximum 250 caractères et être classé par ordre de récurrence, du plus au moins fréquent. 
         Indiquez également le niveau de récurrence de chaque argument type sur une échelle de 0 à 5.
         Le résultat doit être sous format JSON, avec les clés "argument" et "occurrences".
-        {response_format}
+        Chacun des trois arguments doit impérativement respecter ce format: {response_format}
         """
 }
