@@ -12,7 +12,7 @@ from langchain_openai import ChatOpenAI
 from prompts import summarize_templates, keyphrases_templates
 from config import Config
 
-def get_keyphrases(uid, documents, language='fr', model_name='gpt-3.5-turbo-0125'):
+def get_keyphrases(uid, documents, question, language='fr', model_name='gpt-3.5-turbo-0125'):
     """
     Get the keyphrases of arguments based on documents and a given question.
 

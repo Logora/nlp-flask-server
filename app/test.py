@@ -39,7 +39,7 @@ print(get_summary('argument-summary-1-2', arguments['second_position'], argument
 print(get_summary('argument-summary-2-1', arguments_1['first_position'], arguments_1["question"]))
 print(get_summary('argument-summary-2-2', arguments_1['second_position'], arguments_1["question"]))
 
-print(get_keyphrases('keyphrases-extraction-1-1', arguments['first_position']))
-print(get_keyphrases('keyphrases-extraction-1-2', arguments['second_position']))
-print(get_keyphrases('keyphrases-extraction-2-1', arguments_1['first_position']))
-print(get_keyphrases('keyphrases-extraction-2-2', arguments_1['second_position']))
+print(get_keyphrases('keyphrases-extraction-1-1', arguments['first_position'], arguments["question"]))
+print(get_keyphrases('keyphrases-extraction-1-2', arguments['second_position'], arguments["question"]))
+print(get_keyphrases('keyphrases-extraction-2-1', arguments_1['first_position'], arguments["question"]))
+print(get_keyphrases('keyphrases-extraction-2-2', arguments_1['second_position'], arguments["question"]))
