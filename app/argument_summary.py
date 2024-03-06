@@ -21,8 +21,6 @@ def get_summary(uid, documents, question, language='fr', model_name='gpt-3.5-tur
         documents (List[str]): List of documents containing contributions.
         question (str): The debate question.
         language (str): The analysis language. Defaults to 'fr'
-        map_template (str): Template for the map_prompt.
-        reduce_template (str): Template for the reduce_prompt.
         model_name (str, optional): Name of the OpenAI model. Defaults to 'gpt-3.5-turbo-0125'.
 
     Returns:
@@ -32,7 +30,7 @@ def get_summary(uid, documents, question, language='fr', model_name='gpt-3.5-tur
 
     class Argument(BaseModel):
         argument: str = Field(description="an argument")
-        occurrences: int = Field(description="number of occurrences")
+        occurrences: int = Field(description="number of occurrences", gt=1, le=5)
 
     class ArgumentList(BaseModel):
         arguments: List[Argument]

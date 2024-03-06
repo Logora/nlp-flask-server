@@ -1,48 +1,67 @@
 import pandas as pd
-import spacy
-from keyphrase_vectorizers import KeyphraseTfidfVectorizer
-from spacy.lang.fr.stop_words import STOP_WORDS as fr_stop
-from sklearn.feature_extraction.text import CountVectorizer
+import json
+from typing import List
+from langchain.text_splitter import CharacterTextSplitter
+from langchain.docstore.document import Document
+from langchain.prompts import PromptTemplate
+from langchain_core.output_parsers import JsonOutputParser
+from langchain_core.pydantic_v1 import BaseModel, Field
+from langchain.chains.combine_documents.stuff import StuffDocumentsChain
+from langchain.chains.llm import LLMChain
+from langchain_openai import ChatOpenAI
+from prompts import summarize_templates, keyphrases_templates
+from config import Config
 
-def get_keyphrases(uid, documents, question):
-  stop_words = list(fr_stop) + ['oui', 'non']
-  vectorizer = KeyphraseTfidfVectorizer(spacy_pipeline="fr_core_news_md",
-                                      stop_words=stop_words,
-                                      pos_pattern="<NOUN>*<ADJ>*")
+def get_keyphrases(uid, documents, language='fr', model_name='gpt-3.5-turbo-0125'):
+    """
+    Get the keyphrases of arguments based on documents and a given question.
 
-  m = vectorizer.fit_transform(documents)
+    Args:
+        uid (str): Unique ID.
+        documents (List[str]): List of documents containing contributions.
+        language (str): The analysis language. Defaults to 'fr'
+        model_name (str, optional): Name of the OpenAI model. Defaults to 'gpt-3.5-turbo-0125'.
 
-  phrases = get_top_keyphrases(10, vectorizer, m, question)
+    Returns:
+        dict: JSON keywords extraction of the most recurrent arguments.
+    """
+    MAX_PROMPT_LENGTH = 15000
 
-  keyphrase_frequency = get_keyphrase_frequency(phrases, documents)
+    class Keyphrase(BaseModel):
+        keyphrase: str = Field(description="a keyword")
+        occurrences: int = Field(description="number of occurrences")
 
-  json_analysis = build_json(phrases, keyphrase_frequency)
-  return json_analysis
+    class KeyphraseList(BaseModel):
+        keyphrases: List[Keyphrase]
 
-def get_top_keyphrases(number_phrases, vectorizer, tfidf, debate_question):
-  candidate_keyphrases = sorted(list(zip(vectorizer.get_feature_names_out(), tfidf.sum(0).getA1())), key=lambda x: x[1], reverse=True)
-  final_keyphrases = []
+    parser = JsonOutputParser(pydantic_object=KeyphraseList)
+    response_format = parser.get_format_instructions()
 
-  for candidate in candidate_keyphrases:
-    if len(final_keyphrases) >= number_phrases:
-      break
+    docs = [Document(page_content=content) for content in documents]
 
-    if candidate[0] not in debate_question.lower():
-      final_keyphrases.append(candidate)
+    prompt = PromptTemplate(template=keyphrases_templates.get(language), input_variables=['text'], partial_variables={"format_instructions": response_format})
 
-  return final_keyphrases
+    llm = ChatOpenAI(temperature=0, model_name=model_name, openai_api_key=Config.OPENAI_API_KEY)
+    llm_chain = LLMChain(llm=llm, prompt=prompt)
+    
+    stuff_chain = StuffDocumentsChain(llm_chain=llm_chain, document_variable_name="text")
 
-def get_keyphrase_frequency(keyphrases, documents):
-  terms = [t[0] for t in keyphrases]
-  count_vectorizer = CountVectorizer(vocabulary=terms)
-  m_count = count_vectorizer.fit_transform(documents)
-  v_count = m_count.toarray().sum(axis=0)
-  return v_count
+    while True:
+        prompt_length = stuff_chain.prompt_length(docs, response_format=response_format)
+        if prompt_length > MAX_PROMPT_LENGTH:
+            docs.pop()
+        else:
+            break
+            
+    output = stuff_chain.run(input_documents=docs, response_format=response_format)
+    json_output = json.loads(output)
+    json_analysis = build_json(json_output["keyphrases"])
+    return json_analysis
 
-def build_json(keyphrases, keyphrase_frequency):
+def build_json(keyphrases):
   analysis = {}
   keyphrase_objects = []
   for i, k in enumerate(keyphrases):
-    keyphrase_objects.append({ "id": i, "name": k[0], "frequency": int(keyphrase_frequency[i]) })
+    keyphrase_objects.append({ "id": i, "name": k["keyphrase"], "frequency": k["occurrences"] })
   analysis['keyphrases'] = keyphrase_objects
   return analysis
