@@ -34,12 +34,16 @@ body = {
         Jamais le résultat serait mettre la France  l'Europe en état de guerre larvée avec la Russie, la Chine, l'Inde, la corée du nord ainsi que tous les pays du sud global se  serait le début de la 3ème guerre mondiale.'''
     ]
 }
-print(get_summary('argument-summary-1-1', arguments['first_position'], arguments["question"]))
-print(get_summary('argument-summary-1-2', arguments['second_position'], arguments["question"]))
-print(get_summary('argument-summary-2-1', arguments_1['first_position'], arguments_1["question"]))
-print(get_summary('argument-summary-2-2', arguments_1['second_position'], arguments_1["question"]))
+# print(get_summary('argument-summary-1-1', arguments['first_position'], arguments["question"]))
+# print(get_summary('argument-summary-1-2', arguments['second_position'], arguments["question"]))
+# print(get_summary('argument-summary-2-1', arguments_1['first_position'], arguments_1["question"]))
+# print(get_summary('argument-summary-2-2', arguments_1['second_position'], arguments_1["question"]))
 
+print(arguments["question"])
 print(get_keyphrases('keyphrases-extraction-1-1', arguments['first_position'], arguments["question"]))
+print(arguments["question"])
 print(get_keyphrases('keyphrases-extraction-1-2', arguments['second_position'], arguments["question"]))
-print(get_keyphrases('keyphrases-extraction-2-1', arguments_1['first_position'], arguments["question"]))
-print(get_keyphrases('keyphrases-extraction-2-2', arguments_1['second_position'], arguments["question"]))
+print(arguments_1["question"])
+print(get_keyphrases('keyphrases-extraction-2-1', arguments_1['first_position'], arguments_1["question"]))
+print(arguments_1["question"])
+print(get_keyphrases('keyphrases-extraction-2-2', arguments_1['second_position'], arguments_1["question"]))

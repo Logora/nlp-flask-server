@@ -32,8 +32,12 @@ keyphrases_templates = {
         The response format must be in JSON following this format: {response_format}.
         """,
     'fr': """
-        Votre tâche consiste à extraire des mots-clés de cet ensemble d'arguments fournis : {text}. Vous devez extraire 5 mots-clés distincts qui sont les plus récurrents dans cet ensemble d'arguments.
+        Votre tâche consiste à extraire des mots-clés de cet ensemble d'arguments fournis : {text}. 
+        Vous devez extraire 5 mots-clés distincts qui sont les plus récurrents dans cet ensemble d'arguments, 
+        en excluant tout mot-clé qui est similaire ou directement lié à la question de débat: {question}.
+        Assurez-vous que les mots-clés choisis sont variés, pertinents et ne se rapportent pas directement aux éléments centraux de la question de débat.
         Chaque mot-clé doit être différent des autres. Vous devez fournir le nombre de fois que les mots-clés sont présents dans l'ensemble des arguments fournis. 
+        Assurez-vous de choisir des mots-clés pertinents mais distincts des éléments clés de la question posée. 
         Le format de la réponse doit être en JSON et respecter ce modèle: {response_format}.
         """
 }

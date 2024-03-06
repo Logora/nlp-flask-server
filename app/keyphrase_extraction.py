@@ -19,6 +19,7 @@ def get_keyphrases(uid, documents, question, language='fr', model_name='gpt-3.5-
     Args:
         uid (str): Unique ID.
         documents (List[str]): List of documents containing contributions.
+        question (str): The debate question.
         language (str): The analysis language. Defaults to 'fr'
         model_name (str, optional): Name of the OpenAI model. Defaults to 'gpt-3.5-turbo-0125'.
 
@@ -39,7 +40,7 @@ def get_keyphrases(uid, documents, question, language='fr', model_name='gpt-3.5-
 
     docs = [Document(page_content=content) for content in documents]
 
-    prompt = PromptTemplate(template=keyphrases_templates.get(language), input_variables=['text'], partial_variables={"format_instructions": response_format})
+    prompt = PromptTemplate(template=keyphrases_templates.get(language), input_variables=['text', 'question'], partial_variables={"format_instructions": response_format})
 
     llm = ChatOpenAI(temperature=0, model_name=model_name, openai_api_key=Config.OPENAI_API_KEY)
     llm_chain = LLMChain(llm=llm, prompt=prompt)
@@ -47,13 +48,13 @@ def get_keyphrases(uid, documents, question, language='fr', model_name='gpt-3.5-
     stuff_chain = StuffDocumentsChain(llm_chain=llm_chain, document_variable_name="text")
 
     while True:
-        prompt_length = stuff_chain.prompt_length(docs, response_format=response_format)
+        prompt_length = stuff_chain.prompt_length(docs,question=question, response_format=response_format)
         if prompt_length > MAX_PROMPT_LENGTH:
             docs.pop()
         else:
             break
             
-    output = stuff_chain.run(input_documents=docs, response_format=response_format)
+    output = stuff_chain.run(question=question, input_documents=docs, response_format=response_format)
     json_output = json.loads(output)
     json_analysis = build_json(json_output["keyphrases"])
     return json_analysis
