@@ -168,3 +168,57 @@ arguments_1 = {
         e pas dire de propagande d'ailleurs ).'''],
     'question': 'CNews est-elle une chaîne pluraliste ?'
 }
+
+arguments_es = {
+    'first_position': [
+        '''La Unión Europea es la Torre de Babel. Todos quieren llevarse el crédito, son como tetas sin éxito. Firmamos tratados con Ucrania que no sirven para nada. No queremos la guerra. ¿Por quién, por los americanos? De Gaulle no quería la OTAN con razón, fue necesario Sarkozy para que volvamos a ella. Somos incapaces de tener nuestra propia defensa europea. Ayudar a Ucrania, un país corrupto, a derramar subvenciones para compartir, nuestro presidente sin una visión política coherente, ¿a dónde vamos simplemente?
+        Además, sería una casus belli con Rusia, para complacer a los americanos que ahora nos dicen que no nos defenderán en caso de conflicto con Rusia. Pero nos toman por tontos, ¿qué nos aporta la OTAN al final?
+        ¿Por qué no ser 'neutral' como Austria, Suiza? 
+        La OTAN se convierte en un cajón de sastre a discreción de políticos más o menos interesados. En cuanto a la fuerza de disuasión nuclear, debe permanecer bajo nuestra única y exclusiva disposición, no podemos dejar la elección de un bombardeo nuclear y, por lo tanto, medidas de represalia para nuestro país a discreción de políticos extranjeros.
+        Un país gangrenado por la corrupción a gran escala no tiene lugar en la OTAN, ya que ni siquiera tienen las finanzas para poder defenderse, ¿quién pagará por ellos dentro de la OTAN?
+        O tal vez dentro de mucho tiempo.''',
+        '''No vamos a sacrificar nuestra agricultura y nuestra industria sin contrapartida. Mantengámonos despiertos, busquemos comprender el embrollo para encontrar el camino hacia la paz. Escuchemos algo más que los medios tradicionales, entre otros, Emmanuel Todd, Jacques Baud, Natacha Polony... ¿Quién quiere una tercera guerra mundial? Parece que todos nuestros líderes la desean, ¡los inconscientes!''',
+        '''Pero apoyo y protección siempre a las víctimas de las guerras, los ucranianos en particular. La gran mayoría de las personas solo aspiran a una vida pacífica.
+        Vamos a ser invadidos por productos agrícolas que no cumplen con nuestra normativa. ¡Todas las coaliciones generan guerra por la irresponsabilidad de algunos!
+        Si no queremos una guerra mundial...''',
+        '''¡Uf, es bueno ver que no todos los franceses están zombificados por la propaganda de los neoconservadores americanos! ¿La OTAN como vector de paz? ¡Qué risa!
+        ¿Por qué integrar a Ucrania en la OTAN? Primero, debería ser claro que los líderes de este país son ejemplares en su comportamiento nacional, lo cual está lejos de ser el caso.
+        Estoy en contra. Que sea neutral, pero armado hasta los dientes por la OTAN para no ser devorado por Rusia. Servirá de amortiguador entre la OTAN y Rusia. Esta última estará tranquila. Esperemos que no busque recuperar los Estados bálticos, miembros de la OTAN.
+        ¡Los países en el borde de la frontera con Rusia deberían permanecer neutrales!
+        Nunca se debería llegar al punto de poner a Francia y Europa en un estado de guerra latente con Rusia, China, India, Corea del Norte, así como todos los países del sur global, sería el comienzo de la tercera guerra mundial.'''
+        ],
+    'second_position':[
+        '''Los Estados Unidos provocaron a Rusia instalándose en Ucrania. Todas sus acciones desde la explosión de la URSS han buscado debilitar a la UE. La entrada de Ucrania en la OTAN sería la última provocación y podría llevar a una tercera guerra mundial. Ucrania debe permanecer neutral.''',
+        '''Un país gangrenado por la corrupción a gran escala no tiene lugar en la OTAN, ya que ni siquiera tienen las finanzas para poder defenderse, ¿quién pagará por ellos dentro de la OTAN?''',
+        '''O tal vez dentro de mucho tiempo. No vamos a sacrificar nuestra agricultura y nuestra industria sin contrapartida.''',
+        '''¡Todas las coaliciones generan guerra por la irresponsabilidad de algunos!''',
+        '''¡Qué alivio ver que no todos los franceses están zombificados por la propaganda de los neoconservadores americanos! ¿La OTAN como vector de paz? ¡Qué risa!''',
+        '''1) Demasiada corrupción.
+        2) Algunas de las armas suministradas terminan en otros conflictos.
+        3) Correr riesgos temerarios por un país en guerra que no forma parte ni de la OTAN ni de Europa, ¿para defender los intereses americanos? ¡Nos estamos hundiendo en deudas, los servicios públicos están en ruinas y nuestros líderes quieren gastar miles de millones para resolver las venganzas entre países de la ex URSS? ¡Asombroso!''',
+        '''¡Los estamos ayudando y van a comprar centrales nucleares en otros lugares? Tal vez deberíamos dejar de dejarnos engañar! Macron actúa como un líder sin tener la envergadura... ¿Y quién pagará?''',
+        '''Como De Gaulle, no siendo partidario de que Francia esté en la OTAN, no deseo que ninguna de las dos Ucranias forme parte de esa cosa.''',
+        '''¡Vamos a ser invadidos por productos agrícolas que no cumplen con nuestra normativa!''',
+        '''Estoy en contra. Que sea neutral, pero armado hasta los dientes por la OTAN para no ser devorado por Rusia. Servirá de amortiguador entre la OTAN y Rusia. Esta última estará tranquila. Esperemos que no busque recuperar los Estados bálticos, miembros de la OTAN.''',
+        '''Ucrania debe seguir siendo una zona neutral y se debe establecer una negociación pacífica con Rusia sin tener en cuenta los intereses propios de EE. UU. (que son en gran parte responsables del problema). Integrar a Ucrania es un paso más hacia las tensiones y la guerra (deseadas por Macron, presidente de la UE, que tampoco queremos).''',
+        '''¡Los países en la frontera con Rusia deberían permanecer neutrales!''',
+        '''¡NO EN ABSOLUTO! No queremos a los belicistas... ¡Sobre todo porque todos estos seudo líderes nunca irán a hacer su guerra sucia... La paz es mucho mejor!''',
+        '''Quienes votaron sí deberían leer \"El amigo americano\" de Éric Branca...''',
+        '''¡Mejor desencadenar la tercera guerra mundial de una vez, estamos hartos de decisiones que se toman en contra de la opinión de la mayoría de los franceses!''',
+        '''No estoy a favor de la adhesión de Ucrania ni a la OTAN ni a Europa. No olvidemos que es el país más corrupto de Europa (junto con Moldavia) y debería haber una limpieza importante después de la guerra. Me gusta saber a dónde van mis impuestos.''',
+        '''Ni en la OTAN ni en Europa.''',
+        '''Después del colapso de la URSS, los occidentales prometieron que la OTAN no se expandiría, como lo demuestra Roland Dumas, ex ministro socialista, aún con vida hoy. Boris Yeltsin tuvo la ingenuidad de creerles (un poco como los americanos fueron ingenuos con las promesas de Stalin). Después de la entrada de tantos países ex comunistas en la OTAN, no veo el interés de desafiar aún más a Rusia.''',
+        '''No tenemos ningún vínculo de civilización con los ucranianos. Por otro lado, estaremos poniendo una soga al cuello al permitir que Ucrania sea el granero de los países bálticos. La UE podría concluir acuerdos comerciales que respeten las normas europeas y protejan los productos europeos. Si tuviéramos que integrar a todos los países en guerra, tendríamos una torre de Babel. Sin sentimentalismos ni demagogia. Por favor, no agiten el trapo rojo hablando de la pérdida de nuestra soberanía y la invasión de Rusia.''',
+        '''En lugar de rodear a Rusia, deberíamos haber creado una amplia zona neutral de intercambio.''',
+        '''¿Colocar misiles nucleares en las puertas de Moscú? Los americanos en Cuba provocaron reacciones violentas. Entonces, nosotros...''',
+        '''¿Por qué integrar a Ucrania en la OTAN? Primero, debería ser claro que los líderes de este país son ejemplares en su comportamiento nacional, lo cual está lejos de ser el caso.''',
+        '''Nunca debería ingresar a la OTAN, ni a Europa.''',
+        '''El proyecto de adhesión de Ucrania a la OTAN es una de las razones de la guerra ruso-ucraniana. Creo que esta adhesión podría desencadenar la tercera guerra mundial. El estado profundo estadounidense ya estaba dispuesto a luchar hasta el último ucraniano. ¿Proponen luchar hasta el último europeo?''',
+        '''Nunca deberíamos llegar al punto de poner a Francia y Europa en un estado de guerra latente con Rusia, China, India, Corea del Norte, así como todos los países del sur global; sería el comienzo de la tercera guerra mundial. Francia aceptaría que Bélgica, Luxemburgo, España se unieran en una alianza militar con Rusia. La integración de Ucrania en la OTAN es una declaración de guerra con Rusia. Los aspirantes a guerreros, los militares de los platós televisivos, los belicistas que se comprometan a ir a luchar en Ucrania, pero que lo hagan sin los franceses.''',
+        '''Por qué no, ya que sería mucho más favorable que este país solicite ser neutral. Aceptar su participación en Europa está bien, ¡pero ¿por qué querer la OTAN?! Por eso fue que hubo guerra. Si el país hubiera solicitado ser neutral, nunca habría sucedido. Querer adherirse a Europa y seguir siendo neutral habría permitido tener un espacio libre entre Europa y Rusia, sirviendo como amortiguador y no como detonador como es ahora. La rivalidad entre la Rusia de Putin y los Estados Unidos de Biden creada por la OTAN ha hecho que este país pague los daños colaterales causados por dos potencias en juego. El presidente ucraniano es, de hecho, el títere de las dos potencias en acción, y además quieren arrastrar a Europa en este juego de tontos.''',
+        '''Simplemente, Ucrania debe permanecer neutral y fuera de la OTAN. Se ha acordado un trato entre los rusos y los americanos durante el gran cambio de Rusia: Ucrania se convertirá en la 'Suiza del Donbass' neutral con respecto a Rusia. En cuanto a Crimea, su papel sigue siendo el mismo, se mantendrá como Leningrado. Sin embargo, los EE. UU. quieren vender sus bonos del tesoro, al igual que China, Arabia Saudita y los EE. UU. y otros han vendido una parte importante de su deuda. Bueno, tenemos a un peón llamado Zelensky con un traje más grande que su talla que quiere iniciar la guerra: el 50% de la infraestructura de Ucrania está obsoleta, las fábricas al 100% en la zona rica de Donbass están fuera de servicio, 300,000 hombres están heridos, inválidos o muertos. Con una deuda abismal que no dejará de duplicar o triplicar. En este contexto, los EE. UU., tan poderosos como son, han sellado todos los contratos de reconstrucción de Ucrania después de la guerra y el ejército ucraniano solo debe abastecerse de EE. UU. durante 99 años. Ese es el acuerdo de Ucrania, ciertamente, liquidarán el resto de tierras que permanezcan para hipotecar o vender a EE. UU. o incluso a India y China, quién sabe. Pobre pueblo ucraniano, rico en cultura e inteligencia, pero vendido por su clase dominante. Es el país más corrupto no de Europa, pero casi del mundo.''',
+        '''Por un estatus de neutralidad de Ucrania''',
+        '''No favorable, además, si se desintegra, nos quedaremos solos en una aventura incierta'''
+        ],
+    'question': '¿Estás a favor de la adhesión de Ucrania a la OTAN?'
+}

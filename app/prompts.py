@@ -1,14 +1,16 @@
 summarize_templates = {
     'en': """
-        Your task is to summarize arguments in response to the following debate: {question}.
-        Here are the arguments separated by a line:
+        Your task is to summarise the main ideas of the arguments expressed by the participants in this debate on {question}. 
+        Their arguments are presented below, separated by lines:
 
         {text}
 
-        Summarize these arguments by displaying the three most recurring arguments. For each argument, also provide the recurrence of these arguments (from 0 to 5, with 5 being the most recurring).
-        These arguments should be a maximum of 250 characters each and should be ranked from most recurring to least recurring, in JSON format, with keys "argument" and "occurrences".
-
-        ARGUMENTS:""",
+        You must generate three standard arguments which summarise the trends and consensus of the individual arguments.
+        Each standard argument should be a maximum of 250 characters long and should be arranged in order of recurrence, from most to least frequent. 
+        Also indicate the level of recurrence of each standard argument on a scale of 0 to 5.
+        The result must be in JSON format, with the keys "argument" and "occurrences".
+        Each of the three arguments must respect this format: {response_format}
+        """,
     'fr': 
         """
 
@@ -22,14 +24,30 @@ summarize_templates = {
         Indiquez également le niveau de récurrence de chaque argument type sur une échelle de 0 à 5.
         Le résultat doit être sous format JSON, avec les clés "argument" et "occurrences".
         Chacun des trois arguments doit impérativement respecter ce format: {response_format}
+        """,
+    'es':
+        """Tu tarea consiste en resumir las ideas principales de los argumentos expresados por los participantes en este debate sobre {question}. 
+        Sus argumentos se presentan a continuación, separados por líneas:
+
+        {text}
+
+        Debe generar tres argumentos estándar que resuman las tendencias y el consenso de los argumentos individuales.
+        Cada argumento estándar debe tener una longitud máxima de 250 caracteres y debe ordenarse por orden de recurrencia, de más a menos frecuente. 
+        Indique también el nivel de recurrencia de cada argumento estándar en una escala de 0 a 5.
+        El resultado debe estar en formato JSON, con las claves "argument" y "ocurrences".
+        Cada uno de los tres argumentos debe respetar este formato: {response_format}
         """
 }
 
 keyphrases_templates = {
     'en': """
-        Your task is to extract keywords from this set of  provided arguments: {text}. You must extract 5 distinct keywords that are the most recurrent in this set of argument.
-        Each keyword must be different from each other. You must provide the number of times the keywords is present in the set of arguments provided. 
-        The response format must be in JSON following this format: {response_format}.
+        Your task is to extract keywords from the set of arguments provided: {text}. 
+        You must extract 5 distinct keywords that are the most recurrent in this set of arguments, 
+        excluding any keywords that are similar or directly related to the debate question: {question}.
+        Make sure that the keywords chosen are varied, relevant and do not relate directly to the central elements of the debate question.
+        Each keyword must be different from the others. You should provide the number of times the keywords occur in the set of arguments provided. 
+        Make sure you choose keywords that are relevant but distinct from the key elements of the question asked. 
+        The format of the response must be in JSON and follow this model: {response_format}.
         """,
     'fr': """
         Votre tâche consiste à extraire des mots-clés de cet ensemble d'arguments fournis : {text}. 
@@ -39,5 +57,15 @@ keyphrases_templates = {
         Chaque mot-clé doit être différent des autres. Vous devez fournir le nombre de fois que les mots-clés sont présents dans l'ensemble des arguments fournis. 
         Assurez-vous de choisir des mots-clés pertinents mais distincts des éléments clés de la question posée. 
         Le format de la réponse doit être en JSON et respecter ce modèle: {response_format}.
+        """,
+    'es': 
+        """
+        Su tarea consiste en extraer palabras clave del conjunto de argumentos proporcionado: {text}. 
+        Debe extraer 5 palabras clave distintas que sean las más recurrentes en este conjunto de argumentos, 
+        excluyendo cualquier palabra clave que sea similar o esté directamente relacionada con la pregunta del debate: {question}.
+        Asegúrese de que las palabras clave elegidas sean variadas, pertinentes y no estén directamente relacionadas con los elementos centrales de la pregunta del debate.
+        Cada palabra clave debe ser diferente de las demás. Debe indicar el número de veces que aparecen las palabras clave en el conjunto de argumentos proporcionados. 
+        Asegúrese de elegir palabras clave que sean pertinentes pero distintas de los elementos centrales de la pregunta formulada. 
+        El formato de la respuesta debe estar en JSON y seguir este modelo: {response_format}.
         """
 }
