@@ -12,7 +12,7 @@ from langchain_openai import ChatOpenAI
 from prompts import summarize_templates
 from config import Config
 
-def get_summary(uid, documents, question, language='fr', model_name='gpt-3.5-turbo-0125'):
+def get_summary(uid, documents, question, language='fr', model_name='gpt-4o-mini'):
     """
     Get the summary of arguments based on documents and a given question.
 
@@ -21,7 +21,7 @@ def get_summary(uid, documents, question, language='fr', model_name='gpt-3.5-tur
         documents (List[str]): List of documents containing contributions.
         question (str): The debate question.
         language (str): The analysis language. Defaults to 'fr'
-        model_name (str, optional): Name of the OpenAI model. Defaults to 'gpt-3.5-turbo-0125'.
+        model_name (str, optional): Name of the OpenAI model. Defaults to 'gpt-4o-mini'.
 
     Returns:
         dict: JSON analysis of the most recurrent arguments.
