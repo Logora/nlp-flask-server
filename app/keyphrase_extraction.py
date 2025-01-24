@@ -6,7 +6,7 @@ from langchain.docstore.document import Document
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 from pydantic import BaseModel, Field
-from langchain.chains.combine_documents.stuff import StuffDocumentsChain
+from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains.llm import LLMChain
 from langchain_openai import ChatOpenAI
 from prompts import summarize_templates, keyphrases_templates
@@ -45,7 +45,7 @@ def get_keyphrases(uid, documents, question, language='fr', model_name='gpt-4o-m
     llm = ChatOpenAI(temperature=0, model_name=model_name, openai_api_key=Config.OPENAI_API_KEY)
     llm_chain = LLMChain(llm=llm, prompt=prompt)
     
-    stuff_chain = StuffDocumentsChain(llm_chain=llm_chain, document_variable_name="text")
+    stuff_chain = create_stuff_documents_chain(llm_chain=llm_chain, document_variable_name="text")
 
     while True:
         prompt_length = stuff_chain.prompt_length(docs,question=question, response_format=response_format)
