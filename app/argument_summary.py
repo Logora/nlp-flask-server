@@ -54,7 +54,7 @@ def get_summary(uid, documents, question, language='fr', model_name='gpt-4o-mini
         else:
             break
             
-    output = stuff_chain.run(question=question, input_documents=docs, response_format=response_format)
+    output = stuff_chain.invoke(question=question, input_documents=docs, response_format=response_format)
     json_output = json.loads(output)
     json_analysis = build_json(json_output["arguments"])
     return json_analysis
