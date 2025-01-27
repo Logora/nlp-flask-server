@@ -5,8 +5,8 @@ from langchain.text_splitter import CharacterTextSplitter
 from langchain.docstore.document import Document
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
-from langchain_core.pydantic_v1 import BaseModel, Field
-from langchain.chains.combine_documents.stuff import StuffDocumentsChain
+from pydantic import BaseModel, Field
+from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains.llm import LLMChain
 from langchain_openai import ChatOpenAI
 from prompts import summarize_templates
@@ -43,21 +43,37 @@ def get_summary(uid, documents, question, language='fr', model_name='gpt-4o-mini
     summarize_prompt = PromptTemplate(template=summarize_templates.get(language), input_variables=['text', 'question'], partial_variables={"format_instructions": response_format})
 
     llm = ChatOpenAI(temperature=0, model_name=model_name, openai_api_key=Config.OPENAI_API_KEY)
-    llm_chain = LLMChain(llm=llm, prompt=summarize_prompt)
-    
-    stuff_chain = StuffDocumentsChain(llm_chain=llm_chain, document_variable_name="text")
+    stuff_chain = create_stuff_documents_chain(llm, summarize_prompt)
 
     while True:
-        prompt_length = stuff_chain.prompt_length(docs, question=question, response_format=response_format)
+        formatted_input = summarize_prompt.format(context=" ".join([doc.page_content for doc in docs]), 
+                                          question=question,
+                                          response_format=response_format)
+        prompt_length = len(formatted_input)
         if prompt_length > MAX_PROMPT_LENGTH:
             docs.pop()
         else:
             break
             
-    output = stuff_chain.run(question=question, input_documents=docs, response_format=response_format)
-    json_output = json.loads(output)
+    output = stuff_chain.invoke({
+    "context": docs, 
+    "question": question, 
+    "response_format": response_format
+    })
+    
+    json_start = output.find('```json') + len('```json')
+    json_end = output.rfind('```')
+    json_str = output[json_start:json_end].strip()
+
+    try:
+        json_output = json.loads(json_str)
+        print("json: " + str(json_output))
+    except json.JSONDecodeError as e:
+        print(f"JSONDecodeError: {e}")
+        return {"error": "Invalid JSON output"}
     json_analysis = build_json(json_output["arguments"])
     return json_analysis
+  
 
 def build_json(arguments):
     analysis = {}

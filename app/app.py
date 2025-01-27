@@ -4,7 +4,7 @@ from flask_caching import Cache
 from flask_cors import CORS
 from flasgger import Swagger
 from config import Config
-import psycopg2
+import psycopg
 import time
 from flask_sqlalchemy import SQLAlchemy
 from flask import request, make_response, jsonify
@@ -101,7 +101,7 @@ def create_analysis():
   """Create analysis.
     ---
     tags:
-      - analysis
+      - Analysis
     parameters:
       - name: uid
         in: query
