@@ -73,7 +73,6 @@ def get_summary(uid, documents, question, language='fr', model_name='gpt-4o-mini
         return {"error": "Invalid JSON output"}
     json_analysis = build_json(json_output["arguments"])
     return json_analysis
-  
 
 def build_json(arguments):
     analysis = {}
