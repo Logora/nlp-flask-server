@@ -30,7 +30,7 @@ def get_summary(uid, documents, question, language='fr', model_name='gpt-4o-mini
 
     class Argument(BaseModel):
         argument: str = Field(description="an argument")
-        occurrences: int = Field(description="number of occurrences", gt=1, le=5)
+        occurrences: int = Field(description="number of occurrences")
 
     class ArgumentList(BaseModel):
         arguments: List[Argument]
@@ -43,7 +43,8 @@ def get_summary(uid, documents, question, language='fr', model_name='gpt-4o-mini
     summarize_prompt = PromptTemplate(template=summarize_templates.get(language), input_variables=['text', 'question'], partial_variables={"format_instructions": response_format})
 
     llm = ChatOpenAI(temperature=0, model_name=model_name, openai_api_key=Config.OPENAI_API_KEY)
-    stuff_chain = create_stuff_documents_chain(llm, summarize_prompt)
+    llm_with_structured_output = llm.with_structured_output(ArgumentList)
+    stuff_chain = create_stuff_documents_chain(llm_with_structured_output, summarize_prompt)
 
     while True:
         formatted_input = summarize_prompt.format(context=" ".join([doc.page_content for doc in docs]), 
@@ -60,19 +61,15 @@ def get_summary(uid, documents, question, language='fr', model_name='gpt-4o-mini
     "question": question, 
     "response_format": response_format
     })
-    
-    json_start = output.find('```json') + len('```json')
-    json_end = output.rfind('```')
-    json_str = output[json_start:json_end].strip()
 
-    try:
-        json_output = json.loads(json_str)
-        print("json: " + str(json_output))
-    except json.JSONDecodeError as e:
-        print(f"JSONDecodeError: {e}")
-        return {"error": "Invalid JSON output"}
+    print("the output"+output)
+
+
+    json_output = json.loads(output)
     json_analysis = build_json(json_output["arguments"])
     return json_analysis
+
+    
 
 def build_json(arguments):
     analysis = {}
