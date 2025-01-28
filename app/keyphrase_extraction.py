@@ -5,7 +5,6 @@ from langchain.text_splitter import CharacterTextSplitter
 from langchain.docstore.document import Document
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
-from pydantic import BaseModel, Field
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_openai import ChatOpenAI
 from prompts import summarize_templates, keyphrases_templates
@@ -27,27 +26,40 @@ def get_keyphrases(uid, documents, question, language='fr', model_name='gpt-4o-m
     """
     MAX_PROMPT_LENGTH = 15000
 
-    class Keyphrase(BaseModel):
-        keyphrase: str = Field(description="a keyword")
-        occurrences: int = Field(description="number of occurrences")
-
-    class KeyphraseList(BaseModel):
-        keyphrases: List[Keyphrase]
-
-    parser = JsonOutputParser(pydantic_object=KeyphraseList)
-    response_format = parser.get_format_instructions()
-
+    json_schema ={
+        "title": "KeyphraseList",
+        "type": "object",
+        "properties": {
+            "keyphrases": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "keyphrase": {
+                        "type": "string",
+                        "description": "keyword content"
+                    },
+                    "occurrences": {
+                        "type": "integer",
+                        "description": "number of occurrences"
+                    }
+                },
+                "required": ["keyphrase", "occurrences"]
+            }
+            }
+        },
+        "required": ["keyphrases"]
+        }
     docs = [Document(page_content=content) for content in documents]
 
-    prompt = PromptTemplate(template=keyphrases_templates.get(language), input_variables=['text', 'question'], partial_variables={"format_instructions": response_format})
+    prompt = PromptTemplate(template=keyphrases_templates.get(language), input_variables=['context', 'question'])
 
-    llm = ChatOpenAI(temperature=0, model_name=model_name, openai_api_key=Config.OPENAI_API_KEY)
+    llm = ChatOpenAI(temperature=0, model_name=model_name, openai_api_key=Config.OPENAI_API_KEY, model_kwargs={ "response_format": { "type": "json_schema", "json_schema": { "name": "argument_schema", "schema": json_schema } } })
     stuff_chain = create_stuff_documents_chain(llm, prompt)
 
     while True:
         formatted_input = prompt.format(context=" ".join([doc.page_content for doc in docs]),
-                                        question=question,
-                                        response_format=response_format)
+                                        question=question)
         prompt_length = len(formatted_input)
         if prompt_length > MAX_PROMPT_LENGTH:
             docs.pop()
@@ -56,20 +68,10 @@ def get_keyphrases(uid, documents, question, language='fr', model_name='gpt-4o-m
             
     output = stuff_chain.invoke({
         "context": docs,
-        "question": question,
-        "response_format": response_format
+        "question": question
     })
-    json_start = output.find('```json') + len('```json')
-    json_end = output.rfind('```')
-    json_str = output[json_start:json_end].strip()
 
-    try:
-        json_output = json.loads(json_str)
-        print("json: " + str(json_output))
-    except json.JSONDecodeError as e:
-        print(f"JSONDecodeError: {e}")
-        return {"error": "Invalid JSON output"}
-
+    json_output = json.loads(output)
     json_analysis = build_json(json_output["keyphrases"])
     return json_analysis
 
