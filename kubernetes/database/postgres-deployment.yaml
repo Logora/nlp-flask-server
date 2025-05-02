@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: tricoteuses-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tricoteuses-db
+  serviceName: "tricoteuses-db"
+  replicas: 1
+  minReadySeconds: 10
+  template:
+    metadata:
+      labels:
+        app: tricoteuses-db
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: postgres
+          image: pgvector/pgvector:pg17
+          args: ['-c', 'config_file=/etc/postgresql/postgresql.conf']
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: tricoteuses
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: prod-secrets
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: prod-secrets
+                  key: POSTGRES_PASSWORD
+          volumeMounts:
+            - name: postgres-pv-production
+              mountPath: /var/lib/postgresql/data
+              subPath: pgdata
+            - name: postgres-config-volume
+              mountPath: /etc/postgresql/postgresql.conf
+              subPath: postgresql.conf
+              readOnly: false
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - exec pg_isready -U $POSTGRES_USER -h localhost -p 5432
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          startupProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - exec pg_isready -U $POSTGRES_USER -h localhost -p 5432
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - exec pg_isready -U $POSTGRES_USER -h localhost -p 5432
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "1"
+              ephemeral-storage: "4Gi"
+            limits:
+              memory: "4Gi"
+              cpu: "2"
+              ephemeral-storage: "10Gi"
+      volumes:
+        - name: postgres-config-volume
+          configMap:
+            name: postgres-config
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-pv-production
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: sbs-15k-retain
+      resources:
+        requests:
+          storage: 10Gi

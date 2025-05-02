@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nlp-flask-server
+  namespace: production
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nlp-flask-server
+  template:
+    metadata:
+      labels:
+        app: nlp-flask-server
+    spec:
+      containers:
+        - name: api
+          image: ghcr.io/logora/logora-nlp:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - secretRef:
+                name: prod-secrets
+          env:
+            - name: SERVICE_NAME
+              value: nlp-flask-server
+            - name: DATABASE_URL
+              value: postgres://user:pass@rds.eu-west-3.rds.amazonaws.com:5432/ebdb
+          resources:
+            requests:
+              memory: "128M"
+              cpu: "200m"
+              ephemeral-storage: "2Gi"
+            limits:
+              memory: "512M"
+              cpu: "500m"
+              ephemeral-storage: "3Gi"
+          livenessProbe:
+            httpGet:
+              port: 1789
+            initialDelaySeconds: 90
+            periodSeconds: 5
