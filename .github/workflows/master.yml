@@ -27,3 +27,29 @@ jobs:
         context: .
         push: true
         tags: ${{ env.IMAGE_NAME }}:latest
+
+    - name: Set up kubectl
+      run: |
+        curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.15.1/bin/linux/amd64/kubectl
+        chmod u+x kubectl && sudo mv kubectl /bin/kubectl
+
+    - name: Configure Kubernetes Config
+      run: |
+        mkdir -p ~/.kube
+        echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 -d > ~/.kube/config
+        chmod 600 ~/.kube/config
+
+    - name: Create Image Pull Secret
+      run: |
+        kubectl create namespace nlp || echo "namespace already exists"
+        kubectl delete secret ghcr-login-secret --namespace nlp --ignore-not-found
+        kubectl create secret docker-registry ghcr-login-secret \
+          --docker-server=ghcr.io \
+          --docker-username=${{ github.actor }} \
+          --docker-password=${{ secrets.GHCR_TOKEN }} \
+          --namespace nlp
+
+    - name: Deploy to production
+      run: |
+        kubectl apply -R -f kubernetes/production
+        kubectl rollout restart deployment nlp-production --namespace=nlp
