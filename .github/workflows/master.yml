@@ -27,6 +27,13 @@ jobs:
         context: .
         push: true
         tags: ${{ env.IMAGE_NAME }}:latest
+    
+    - name: Create .env file
+      uses: shine1594/secrets-to-env-action@master
+      with:
+        secrets: ${{ toJSON(secrets) }}
+        secrets_env: production
+        prefix_prod: "_PROD_"
 
     - name: Set up kubectl
       run: |
@@ -51,5 +58,7 @@ jobs:
 
     - name: Deploy to production
       run: |
+        kubectl delete secret generic prod-secrets --ignore-not-found --namespace=nlp
+        kubectl create secret generic prod-secrets --from-env-file=.env --namespace=nlp
         kubectl apply -R -f kubernetes/production
         kubectl rollout restart deployment nlp-production --namespace=nlp
